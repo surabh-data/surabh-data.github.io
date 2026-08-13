@@ -2,12 +2,12 @@ const header = document.querySelector("[data-header]");
 const navMenu = document.querySelector("[data-nav-menu]");
 const navToggle = document.querySelector("[data-nav-toggle]");
 const year = document.querySelector("[data-year]");
-const filterButtons = document.querySelectorAll("[data-filter]");
-const projectCards = document.querySelectorAll("[data-category]");
+const revealItems = document.querySelectorAll(".reveal");
 
 function syncHeader() {
+  const forceLight = header?.classList.contains("light");
   const isScrolled = window.scrollY > 12;
-  header?.classList.toggle("is-scrolled", isScrolled);
+  header?.classList.toggle("is-scrolled", Boolean(forceLight || isScrolled));
 }
 
 function closeNav() {
@@ -37,21 +37,20 @@ navMenu?.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", closeNav);
 });
 
-filterButtons.forEach((button) => {
-  button.setAttribute("aria-pressed", button.classList.contains("is-active") ? "true" : "false");
+if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.14 }
+  );
 
-  button.addEventListener("click", () => {
-    const filter = button.dataset.filter;
-
-    filterButtons.forEach((item) => {
-      const isActive = item === button;
-      item.classList.toggle("is-active", isActive);
-      item.setAttribute("aria-pressed", String(isActive));
-    });
-
-    projectCards.forEach((card) => {
-      const categories = card.dataset.category.split(" ");
-      card.hidden = filter !== "all" && !categories.includes(filter);
-    });
-  });
-});
+  revealItems.forEach((item) => observer.observe(item));
+} else {
+  revealItems.forEach((item) => item.classList.add("is-visible"));
+}
