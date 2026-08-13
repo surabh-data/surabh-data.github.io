@@ -709,6 +709,296 @@ h3 {
   padding: 10px 12px;
 }
 
+.education-hero {
+  color: #ffffff;
+}
+
+.education-hero::before {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  content: "";
+  background:
+    linear-gradient(110deg, rgba(12, 37, 59, 0.96), rgba(17, 135, 140, 0.74), rgba(105, 88, 184, 0.46)),
+    url("assets/portfolio-hero.png") center / cover no-repeat;
+}
+
+.edu-orbit {
+  position: relative;
+  min-height: 430px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 210, 140, 0.16), transparent 36%),
+    linear-gradient(225deg, rgba(127, 208, 201, 0.18), transparent 42%),
+    rgba(12, 37, 59, 0.88);
+  box-shadow: var(--shadow);
+  animation: floatPanel 7s ease-in-out infinite;
+}
+
+.edu-ring {
+  position: absolute;
+  inset: 70px;
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  animation: rotateTrack 24s linear infinite;
+}
+
+.edu-ring.two {
+  inset: 112px;
+  border-style: solid;
+  border-color: rgba(127, 208, 201, 0.24);
+  animation-duration: 18s;
+  animation-direction: reverse;
+}
+
+.edu-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  width: 132px;
+  height: 132px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.edu-core strong {
+  color: #ffd28c;
+  font-size: 31px;
+  line-height: 1;
+}
+
+.edu-core span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.edu-node {
+  position: absolute;
+  display: inline-flex;
+  min-width: 86px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  animation: tagFloat 4s ease-in-out infinite;
+}
+
+.edu-node.school {
+  left: 12%;
+  top: 28%;
+}
+
+.edu-node.college {
+  right: 12%;
+  top: 22%;
+  animation-delay: 0.28s;
+}
+
+.edu-node.csu {
+  bottom: 20%;
+  left: 42%;
+  animation-delay: 0.56s;
+}
+
+.education-strip .impact-stat {
+  border-color: var(--line);
+  background: #ffffff;
+}
+
+.education-strip .impact-stat span {
+  color: var(--muted);
+}
+
+.education-map {
+  display: grid;
+  gap: 16px;
+}
+
+.edu-card {
+  display: grid;
+  grid-template-columns: 112px 4px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 12px 32px rgba(12, 37, 59, 0.08);
+}
+
+.edu-year {
+  display: inline-grid;
+  min-height: 44px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--deep);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.edu-line {
+  width: 4px;
+  min-height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--teal), var(--amber), var(--violet));
+}
+
+.edu-meta {
+  margin: 0 0 10px;
+  color: var(--green);
+  font-weight: 900;
+}
+
+.edu-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.edu-tags span {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 7px 9px;
+}
+
+.spark-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.spark-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 12px 32px rgba(12, 37, 59, 0.08);
+}
+
+.spark-card p {
+  color: var(--muted);
+}
+
+.spark-graphic {
+  position: relative;
+  height: 132px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--deep);
+  margin-bottom: 16px;
+}
+
+.book-graphic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.book-graphic span {
+  width: 42px;
+  height: 82px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, var(--amber), #f7c26d);
+  transform-origin: bottom;
+  animation: bookTilt 3s ease-in-out infinite alternate;
+}
+
+.book-graphic span:nth-child(2) {
+  height: 96px;
+  background: linear-gradient(180deg, var(--teal), #7fd0c9);
+  animation-delay: 0.18s;
+}
+
+.book-graphic span:nth-child(3) {
+  height: 70px;
+  background: linear-gradient(180deg, var(--violet), #a195dc);
+  animation-delay: 0.36s;
+}
+
+.hill-graphic {
+  display: grid;
+  align-items: end;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 20px;
+}
+
+.hill-graphic span {
+  height: 72px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, var(--green), var(--teal));
+  animation: civicLift 2.6s ease-in-out infinite alternate;
+}
+
+.hill-graphic span:nth-child(2) {
+  height: 108px;
+  background: linear-gradient(180deg, var(--amber), var(--green));
+  animation-delay: 0.2s;
+}
+
+.hill-graphic span:nth-child(3) {
+  height: 86px;
+  background: linear-gradient(180deg, var(--blue), var(--teal));
+  animation-delay: 0.4s;
+}
+
+.skyline-graphic {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+}
+
+.skyline-graphic span {
+  width: 42px;
+  border-radius: 7px 7px 0 0;
+  background: linear-gradient(180deg, #7fd0c9, var(--blue));
+  animation: barRise 2.4s ease-in-out infinite alternate;
+}
+
+.skyline-graphic span:nth-child(1) {
+  height: 58px;
+}
+
+.skyline-graphic span:nth-child(2) {
+  height: 96px;
+  animation-delay: 0.18s;
+}
+
+.skyline-graphic span:nth-child(3) {
+  height: 72px;
+  background: linear-gradient(180deg, #ffd28c, var(--amber));
+  animation-delay: 0.36s;
+}
+
+.skyline-graphic span:nth-child(4) {
+  height: 110px;
+  animation-delay: 0.54s;
+}
+
 .site-footer {
   display: flex;
   width: min(1120px, calc(100% - 40px));
@@ -825,6 +1115,21 @@ h3 {
   }
 }
 
+@keyframes rotateTrack {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bookTilt {
+  from {
+    transform: rotate(-2deg) scaleY(0.96);
+  }
+  to {
+    transform: rotate(2deg) scaleY(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -859,7 +1164,8 @@ h3 {
 
   .work-grid,
   .impact-strip,
-  .impact-timeline {
+  .impact-timeline,
+  .spark-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -941,6 +1247,47 @@ h3 {
 
   .motion-dashboard {
     padding: 14px;
+  }
+
+  .edu-orbit {
+    min-height: 340px;
+  }
+
+  .edu-ring {
+    inset: 52px;
+  }
+
+  .edu-ring.two {
+    inset: 88px;
+  }
+
+  .edu-core {
+    width: 112px;
+    height: 112px;
+  }
+
+  .edu-node.school {
+    left: 8%;
+    top: 26%;
+  }
+
+  .edu-node.college {
+    right: 8%;
+    top: 20%;
+  }
+
+  .edu-node.csu {
+    left: 36%;
+    bottom: 16%;
+  }
+
+  .edu-card {
+    grid-template-columns: 1fr;
+  }
+
+  .edu-line {
+    width: 100%;
+    min-height: 4px;
   }
 
   .dash-kpis,
