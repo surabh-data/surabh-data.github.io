@@ -1,12 +1,13 @@
 # Surabh Saxena Portfolio
 
-Static portfolio website for Surabh Saxena, built for GitHub Pages.
+Static two-page portfolio website for Surabh Saxena, built for GitHub Pages.
 
 ## Files
 
-- `index.html` - page content and project sections
+- `index.html` - animated portfolio homepage
+- `social.html` - social work and campus service page
 - `styles.css` - responsive visual design
-- `script.js` - mobile navigation and project filtering
+- `script.js` - mobile navigation and reveal animations
 - `assets/portfolio-hero.png` - generated hero visual
 - `assets/surabh-saxena-resume.pdf` - downloadable resume
 - `assets/surabh-csu-standing.jpg` - CSU profile photo
@@ -15,6 +16,7 @@ Static portfolio website for Surabh Saxena, built for GitHub Pages.
 - `assets/surabh-csu-seated-focus.jpg` - web crop used in the profile section
 - `assets/surabh-campus-service.jpg` - campus service photo
 - `assets/surabh-campus-dining.jpg` - campus dining photo
+- `assets/surabh-portfolio-qr.png` - QR code for the public website
 
 ## Publish On GitHub Pages
 
