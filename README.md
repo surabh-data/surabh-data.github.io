@@ -1,10 +1,11 @@
 # Surabh Saxena Portfolio
 
-Static two-page portfolio website for Surabh Saxena, built for GitHub Pages.
+Static three-page portfolio website for Surabh Saxena, built for GitHub Pages.
 
 ## Files
 
 - `index.html` - animated portfolio homepage
+- `education.html` - education journey and institution highlights
 - `social.html` - social work and campus service page
 - `styles.css` - responsive visual design
 - `script.js` - mobile navigation and reveal animations
@@ -37,3 +38,4 @@ For a personal GitHub Pages site, create a repository named `your-username.githu
 - Replace `assets/portfolio-hero.png` to update the hero visual.
 - Replace the `assets/surabh-*.jpg` files to update the profile photos.
 - Edit the project cards in `index.html` to add GitHub links or live project URLs.
+- Edit the education cards in `education.html` when education details or source links change.
