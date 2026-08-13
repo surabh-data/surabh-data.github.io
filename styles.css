@@ -589,6 +589,17 @@ h3 {
   border-top: 1px solid var(--line);
 }
 
+.work-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.work-links .button.primary {
+  background: var(--blue);
+}
+
 .social-visual img {
   width: 100%;
   aspect-ratio: 4 / 3;
