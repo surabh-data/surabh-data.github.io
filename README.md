@@ -1,6 +1,7 @@
 # Surabh Saxena Portfolio
 
-Static three-page portfolio website for Surabh Saxena, built for GitHub Pages.
+Static three-page portfolio website for Surabh Saxena, built for GitHub Pages. The site highlights data,
+AI, operations, campus leadership, social work, public project links, and verified certificates.
 
 ## Files
 
@@ -18,6 +19,14 @@ Static three-page portfolio website for Surabh Saxena, built for GitHub Pages.
 - `assets/surabh-campus-service.jpg` - campus service photo
 - `assets/surabh-campus-dining.jpg` - campus dining photo
 - `assets/surabh-portfolio-qr.png` - QR code for the public website
+
+## Public Links Featured
+
+- GitHub profile: <https://github.com/surabh-data>
+- Live Weather repository: <https://github.com/surabh-data/Liveweather>
+- Tableau Public: <https://public.tableau.com/app/profile/surabh.saxena>
+- HackerRank: <https://www.hackerrank.com/surabhdata>
+- LinkedIn profile: <https://www.linkedin.com/in/surabh-csu/>
 
 ## Publish On GitHub Pages
 
