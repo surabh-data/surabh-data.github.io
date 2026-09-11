@@ -12,18 +12,19 @@ AI, operations, campus leadership, social work, public project links, and verifi
 - `script.js` - mobile navigation and reveal animations
 - `assets/portfolio-hero.png` - generated hero visual
 - `assets/surabh-saxena-resume.pdf` - downloadable resume
+- `assets/surabh-portfolio-qr.png` - QR code for the public website
 - `assets/surabh-csu-standing.jpg` - CSU profile photo
 - `assets/surabh-csu-seated.jpg` - CSU professional photo
 - `assets/surabh-csu-standing-focus.jpg` - web crop used in the profile section
 - `assets/surabh-csu-seated-focus.jpg` - web crop used in the profile section
 - `assets/surabh-campus-service.jpg` - campus service photo
 - `assets/surabh-campus-dining.jpg` - campus dining photo
-- `assets/surabh-portfolio-qr.png` - QR code for the public website
 
 ## Public Links Featured
 
 - GitHub profile: <https://github.com/surabh-data>
-- Live Weather repository: <https://github.com/surabh-data/Liveweather>
+- Live Weather Studio app: <https://surabh-data.github.io/live-weather-studio/>
+- Live Weather Studio repository: <https://github.com/surabh-data/live-weather-studio>
 - Tableau Public: <https://public.tableau.com/app/profile/surabh.saxena>
 - HackerRank: <https://www.hackerrank.com/surabhdata>
 - LinkedIn profile: <https://www.linkedin.com/in/surabh-csu/>
