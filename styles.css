@@ -525,6 +525,24 @@ h3 {
   outline: none;
   transform: translateY(-3px);
 }
+.learning-journey {
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+  padding-top: 26px;
+}
+
+.learning-journey-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .learning-journey-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 .card-graphic {
   position: relative;
