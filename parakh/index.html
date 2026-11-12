@@ -269,8 +269,8 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
       <div class="qr" id="qr" aria-label="UPI payment QR code"></div>
       <div class="payinfo">
         <div class="price">&#8377;49</div>
-        <div><span class="small muted">UPI ID</span><div class="upi" id="upiId">8193835370@ybl</div></div>
-        <div class="btns"><button type="button" id="cpUpi">Copy UPI ID</button></div>
+        <p class="small muted">Scan the code with any UPI app. On a phone, use the button.</p>
+        <div class="btns"><a class="btn" id="upiLink" href="#" style="padding:9px 14px">Pay in a UPI app</a></div>
         <label class="f" for="utr">UPI reference number (UTR) from your payment app
           <input type="text" id="utr" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="12 digits">
         </label>
@@ -938,12 +938,10 @@ $("unlock").addEventListener("click",function(){
   if(store.utr.indexOf(v)>=0){$("payMsg").textContent="That reference number was already used. Enter the one from your latest payment.";return}
   store.utr.push(v);store.credits+=PACK;save();$("utr").value="";$("payMsg").textContent="";runCheck();
 });
-$("cpUpi").addEventListener("click",function(){
-  try{navigator.clipboard.writeText(UPI).then(function(){$("payMsg").textContent="UPI ID copied."},function(){$("payMsg").textContent="Copy was blocked. Type the UPI ID shown above."})}
-  catch(e){$("payMsg").textContent="Copy was blocked. Type the UPI ID shown above."}
-});
-try{new QRCode($("qr"),{text:"upi://pay?pa="+encodeURIComponent(UPI)+"&pn=Parakh&am="+PRICE+".00&cu=INR&tn="+encodeURIComponent("Parakh checks"),width:168,height:168,correctLevel:QRCode.CorrectLevel.M})}
-catch(e){$("qr").textContent="QR code could not load. Pay to the UPI ID shown."}
+var UPIURL="upi://pay?pa="+encodeURIComponent(UPI)+"&pn=Parakh&am="+PRICE+".00&cu=INR&tn="+encodeURIComponent("Parakh checks");
+$("upiLink").href=UPIURL;
+try{new QRCode($("qr"),{text:UPIURL,width:168,height:168,correctLevel:QRCode.CorrectLevel.M})}
+catch(e){$("qr").textContent="The QR code could not load. Use the Pay in a UPI app button, or reload the page."}
 $("clear").addEventListener("click",function(){load(EMPTY);$("exnote").hidden=true;render();$("handle").focus()});
 document.addEventListener("input",render);
 document.addEventListener("change",render);
