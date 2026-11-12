@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parakh Profile Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column. Verdict first, then the three checks that feed it, then consent and reporting. */
+:root{
+  --bg:#f2f3f8; --surface:#ffffff; --ink:#141a2e; --muted:#59617e; --line:#d8dbe8;
+  --accent:#3a3fd0; --accent-ink:#ffffff; --accent-soft:#e8e9fb;
+  --good:#1a7550; --good-bg:#e1f3ea; --warn:#955800; --warn-bg:#fbeed3; --bad:#b92d27; --bad-bg:#fbe3e1;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f1220; --surface:#181c2e; --ink:#e9ebf5; --muted:#9ba3c1; --line:#2c3252;
+    --accent:#9da1ff; --accent-ink:#0f1220; --accent-soft:#23274a;
+    --good:#56cb93; --good-bg:#14301f; --warn:#f1b352; --warn-bg:#33270f; --bad:#ff8a81; --bad-bg:#3a1a18;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1220; --surface:#181c2e; --ink:#e9ebf5; --muted:#9ba3c1; --line:#2c3252;
+  --accent:#9da1ff; --accent-ink:#0f1220; --accent-soft:#23274a;
+  --good:#56cb93; --good-bg:#14301f; --warn:#f1b352; --warn-bg:#33270f; --bad:#ff8a81; --bad-bg:#3a1a18;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:24px 16px 56px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:30px;font-weight:700;letter-spacing:-.01em}
+h2{font-size:20px;font-weight:600}
+h3{font-size:16px;font-weight:600;font-family:var(--body)}
+p{margin:0}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.mono{font-family:var(--mono)}
+header{display:flex;flex-direction:column;gap:8px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.step{display:flex;align-items:center;gap:10px}
+.num{font-family:var(--mono);font-size:13px;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;flex:none}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
+input[type=text],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{min-height:170px;resize:vertical;font-family:var(--mono);font-size:14px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1.4fr;gap:12px}
+@media (max-width:480px){.row{grid-template-columns:1fr}}
+button{font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.q{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0;padding-top:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:inline-block;font-size:14px;padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.seg input:checked+span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+/* verdict */
+.verdict{border-left-width:6px}
+.verdict[data-level=low]{border-left-color:var(--good)}
+.verdict[data-level=caution]{border-left-color:var(--warn)}
+.verdict[data-level=high]{border-left-color:var(--bad)}
+.verdict[data-level=open]{border-left-color:var(--muted)}
+.vhead{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.vtitle{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.1}
+.score{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:34px;line-height:1;text-align:right;flex:none}
+.score small{display:block;font-size:11px;color:var(--muted);letter-spacing:.05em;margin-top:4px}
+.who{font-family:var(--mono);font-size:14px;overflow-wrap:anywhere}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar-top{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:14px;font-weight:500}
+.pill{font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.low{background:var(--good-bg);color:var(--good)}
+.pill.caution{background:var(--warn-bg);color:var(--warn)}
+.pill.high{background:var(--bad-bg);color:var(--bad)}
+.pill.open{background:var(--accent-soft);color:var(--muted)}
+.track{height:8px;border-radius:4px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin-top:6px}
+.fill{height:100%;border-radius:4px;transition:width .25s}
+.fill.low{background:var(--good)}.fill.caution{background:var(--warn)}.fill.high{background:var(--bad)}.fill.open{background:var(--muted)}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+ul.flags{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+ul.flags li{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+ul.flags .w{font-family:var(--mono);font-size:12px;color:var(--bad);background:var(--bad-bg);border-radius:4px;padding:1px 6px;flex:none;font-variant-numeric:tabular-nums}
+.chatview{font-family:var(--mono);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;max-height:260px;overflow:auto}
+mark{background:var(--bad-bg);color:var(--bad);border-radius:3px;padding:0 2px}
+.links{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.note{font-size:14px;background:var(--accent-soft);border-radius:8px;padding:10px 12px}
+.msg{font-size:14px;background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.locked{opacity:.75}
+[hidden]{display:none!important}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.tile b{font-family:var(--mono);font-size:26px;font-weight:500;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile span{font-size:12px;color:var(--muted)}
+.tile.low b{color:var(--good)}.tile.caution b{color:var(--warn)}.tile.high b{color:var(--bad)}
+.frows{display:flex;flex-direction:column;gap:12px}
+.frow-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-size:14px;font-weight:500}
+.frow-top .pts{font-family:var(--mono);color:var(--bad);flex:none;font-variant-numeric:tabular-nums}
+.frow .area{font-size:12px;color:var(--muted)}
+.frow .track{margin-top:4px}
+.finechips{display:flex;flex-wrap:wrap;gap:6px}
+.finechips .chip{font-weight:400}
+.more{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:10;display:flex;gap:6px;align-items:center;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);padding:9px 16px 9px 12px;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.more svg{width:18px;height:18px;animation:nudge 1.4s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.more svg{animation:none}}
+.who{border-top:4px solid var(--accent)}
+.who h2{font-size:24px}
+.idcard{display:flex;gap:14px;align-items:center;background:var(--accent-soft);border-radius:12px;padding:14px}
+.idcard .avatar{flex:none}
+.idtext{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}
+.idhandle{font-family:var(--mono);font-size:18px;font-weight:500;overflow-wrap:anywhere}
+.b-open{fill:var(--muted)}.b-low{fill:var(--good)}.b-caution{fill:var(--warn)}.b-high{fill:var(--bad)}
+.who select{padding:13px 12px;border-width:2px;font-size:16px}
+.who input[type=text]{font-family:var(--mono);font-size:17px;padding:13px 14px;border-width:2px}
+.view{display:flex;flex-direction:column;gap:20px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs a{padding:10px 14px;font-weight:600;text-decoration:none;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.lgrid{grid-template-columns:1fr}}
+.lcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.lcard h3{font-family:var(--display);font-size:17px}
+.lab{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:1px 6px;align-self:flex-start}
+.lab.bad{background:var(--bad-bg);color:var(--bad)}.lab.good{background:var(--good-bg);color:var(--good)}
+.rules{margin:0;padding:0;list-style:none;counter-reset:r;display:flex;flex-direction:column;gap:10px}
+.rules li{counter-increment:r;display:flex;gap:12px;align-items:flex-start}
+.rules li::before{content:counter(r);font-family:var(--mono);font-size:13px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.bubble{font-family:var(--mono);font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:10px 10px 10px 2px;padding:10px}
+.fb{font-size:14px;border-radius:8px;padding:8px 10px}
+.fb.ok{background:var(--good-bg);color:var(--good)}.fb.no{background:var(--warn-bg);color:var(--warn)}
+.stage{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.contact{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.contact .addr{font-family:var(--mono);overflow-wrap:anywhere}
+.contact button,.contact a.btn{padding:5px 10px;font-size:13px}
+a.btn{display:inline-block;font-weight:600;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:15px;font-weight:500;cursor:pointer}
+.check input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--accent)}
+.bignum{font-family:var(--mono);font-size:22px;font-weight:500}
+.drop{position:relative;border:2px dashed var(--line);border-radius:10px;padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:var(--bg)}
+.drop.over,.drop:focus-within{border-color:var(--accent);background:var(--accent-soft)}
+.drop svg{width:34px;height:34px;color:var(--accent)}
+.drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.evlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.evlist li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px}
+.evlist .th{width:48px;height:48px;flex:none;border-radius:6px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;overflow:hidden}
+.evlist .th img{width:100%;height:100%;object-fit:cover}
+.evlist .meta{flex:1;min-width:0;font-size:14px}
+.evlist .meta div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evlist button{padding:5px 10px;font-size:13px;flex:none}
+.evact{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.hero{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.hero-text{flex:1;min-width:240px;display:flex;flex-direction:column;gap:10px}
+.hero-art{width:170px;max-width:100%;height:auto;flex:none;margin:0 auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;background:var(--good-bg);color:var(--good);border-radius:999px;padding:4px 10px}
+.chip svg{width:14px;height:14px;flex:none}
+.calm{background:var(--accent-soft);border-color:transparent}
+.calm-top{display:flex;gap:16px;align-items:center}
+.breath{width:72px;height:72px;flex:none;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center}
+.breath span{width:56px;height:56px;border-radius:50%;background:var(--accent);opacity:.85;animation:breathe 5s ease-in-out infinite alternate}
+@keyframes breathe{from{transform:scale(.35)}to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.breath span{animation:none;transform:scale(.7)}}
+.tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:520px){.tiles{grid-template-columns:1fr}}
+.tiles li{background:var(--surface);border-radius:8px;padding:12px;display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:500}
+.tiles svg{width:22px;height:22px;flex:none;color:var(--accent)}
+.gauge{flex:none;width:128px;text-align:center}
+.gauge svg{display:block}
+.gtrack,.gval{fill:none;stroke-width:10;stroke-linecap:round}
+.gtrack{stroke:var(--line)}
+.gval{stroke-dasharray:0 170;transition:stroke-dasharray .4s}
+.gval.low{stroke:var(--good)}.gval.caution{stroke:var(--warn)}.gval.high{stroke:var(--bad)}.gval.open{stroke:var(--muted)}
+@media (prefers-reduced-motion:reduce){.gval{transition:none}}
+.gnum{margin-top:-36px;font-family:var(--mono);font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.gnum small{display:block;font-size:11px;color:var(--muted);letter-spacing:.05em;margin-top:6px}
+@media (max-width:420px){.vtitle{font-size:22px}.gauge{width:108px}.gauge svg{width:108px;height:auto}}
+.gate{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.pay{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.qr{background:#fff;padding:10px;border-radius:8px;border:1px solid var(--line);flex:none;min-width:190px;min-height:190px;color:#141a2e;font-size:13px}
+.qr img,.qr canvas{display:block;max-width:100%}
+.payinfo{display:flex;flex-direction:column;gap:10px;flex:1;min-width:220px}
+.price{font-family:var(--mono);font-size:22px;font-variant-numeric:tabular-nums}
+.upi{font-family:var(--mono);font-size:15px;overflow-wrap:anywhere}
+footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand"><h1>Parakh</h1><span class="tag">Beta</span></div>
+  <div class="hero">
+    <div class="hero-text">
+      <h2 style="font-size:24px">Not sure about someone? Take a breath. We will check together.</h2>
+      <p>Parakh looks at three things: who they appear to be, what others have reported, and how they talk to you.</p>
+      <div class="chips">
+        <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>Your chat stays on this device</span>
+        <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>No sign-up</span>
+        <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>They are never told you checked</span>
+      </div>
+    </div>
+    <svg class="hero-art" viewBox="0 0 200 140" role="img" aria-label="A chat being examined under a magnifying glass">
+      <rect x="18" y="14" width="96" height="112" rx="12" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>
+      <rect x="30" y="30" width="52" height="14" rx="7" fill="var(--accent-soft)"/>
+      <rect x="50" y="52" width="52" height="14" rx="7" fill="var(--accent)" opacity=".85"/>
+      <rect x="30" y="74" width="60" height="14" rx="7" fill="var(--bad-bg)" stroke="var(--bad)" stroke-width="1.5"/>
+      <rect x="30" y="96" width="40" height="14" rx="7" fill="var(--accent-soft)"/>
+      <circle cx="134" cy="78" r="34" fill="var(--surface)" stroke="var(--accent)" stroke-width="5"/>
+      <line x1="159" y1="103" x2="184" y2="128" stroke="var(--accent)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M119 79l10 10 20-22" fill="none" stroke="var(--good)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <p class="small muted">You are not alone in this. People reported losing $2.1 billion in 2025 to scams that began on social media (<a href="https://www.ftc.gov/news-events/data-visualizations/data-spotlight/2026/04/reported-losses-scams-social-media-eight-times-higher-2020">FTC Data Spotlight, April 2026</a>).</p>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <a href="#check" id="tab-check">Check a profile</a>
+  <a href="#learn" id="tab-learn">Learn to spot scams</a>
+</nav>
+
+<div class="view" id="view-check">
+<section class="card calm">
+  <div class="calm-top">
+    <div class="breath" aria-hidden="true"><span></span></div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h2>Feeling pressured right now?</h2>
+      <p class="small">Scammers rush people on purpose. Breathe in as the circle grows and out as it shrinks. You can stop replying to them at any time.</p>
+    </div>
+  </div>
+  <ul class="tiles">
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></svg><span>Pause. A genuine person will wait.</span></li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M4 20L20 4"/></svg><span>Send no money, gift cards or crypto.</span></li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span>Share no OTP, password or ID photo.</span></li>
+  </ul>
+  <p class="small">Being targeted is not your fault. These messages are written by people who do this for a living. This guidance and the reporting links below are always free.</p>
+</section>
+
+<section class="card verdict" id="verdict" data-level="open" aria-live="polite">
+  <div class="vhead">
+    <div>
+      <div class="who" id="who"></div>
+      <div class="vtitle" id="vtitle"></div>
+    </div>
+    <div class="gauge">
+      <svg viewBox="0 0 128 76" width="128" height="76" role="img" aria-label="Risk gauge"><path d="M10 66A54 54 0 01118 66" class="gtrack"/><path d="M10 66A54 54 0 01118 66" class="gval open" id="garc"/></svg>
+      <div class="gnum"><span id="vscore">0</span><small>RISK / 100</small></div>
+    </div>
+  </div>
+  <p id="vtext"></p>
+  <div class="bars" id="bars"></div>
+  <div class="gate" id="gateRun" hidden>
+    <div class="btns"><button type="button" class="primary" id="run">Get result</button></div>
+  </div>
+  <div class="gate" id="gatePay" hidden>
+    <h3>Pay by UPI to unlock 10 more checks</h3>
+    <div class="pay">
+      <div class="qr" id="qr" aria-label="UPI payment QR code"></div>
+      <div class="payinfo">
+        <div class="price">&#8377;49</div>
+        <div><span class="small muted">UPI ID</span><div class="upi" id="upiId">8193835370@ybl</div></div>
+        <div class="btns"><button type="button" id="cpUpi">Copy UPI ID</button></div>
+        <label class="f" for="utr">UPI reference number (UTR) from your payment app
+          <input type="text" id="utr" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="12 digits">
+        </label>
+        <div class="btns"><button type="button" class="primary" id="unlock">Unlock result</button></div>
+        <p class="small muted" id="payMsg" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+  <p class="small muted" id="quota"></p>
+  <p class="small muted" id="exnote">Example data is loaded so you can see how a result reads. <button type="button" id="clear" style="padding:3px 10px;font-size:13px;margin-left:4px">Clear and start</button></p>
+</section>
+
+<section class="card" id="dash" hidden>
+  <h2>Risk report</h2>
+  <div id="dashBody" style="display:flex;flex-direction:column;gap:14px"></div>
+  <div class="btns"><button type="button" class="primary" id="dlPdf">Download report (PDF)</button><button type="button" id="dlPng">Download as image</button></div>
+  <p class="small muted" id="dlMsg" aria-live="polite">The file is made on this device and sent nowhere. Attach it wherever you choose, with your own screenshots.</p>
+</section>
+
+<section class="card who">
+  <div class="step"><span class="num">1</span><h2>Who is messaging you?</h2></div>
+  <p>Start with the name on your screen. They will never know you looked.</p>
+  <div class="idcard">
+    <svg class="avatar" viewBox="0 0 72 72" width="72" height="72" aria-hidden="true">
+      <circle cx="34" cy="36" r="30" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+      <circle cx="34" cy="28" r="10" fill="var(--accent)"/>
+      <path d="M14 56a20 16 0 0140 0z" fill="var(--accent)"/>
+      <circle cx="56" cy="56" r="13" id="idBadge" class="b-open" stroke="var(--accent-soft)" stroke-width="3"/>
+      <text x="56" y="61.5" text-anchor="middle" font-size="16" font-weight="700" fill="var(--surface)" id="idMark">?</text>
+    </svg>
+    <div class="idtext">
+      <span class="small muted" id="idPlat">Instagram</span>
+      <span class="idhandle" id="idHandle">@username</span>
+      <span class="pill open" id="idTag">Not checked yet</span>
+    </div>
+  </div>
+  <div class="row">
+    <label class="f" for="platform">Where did they reach you?
+      <select id="platform">
+        <option>Instagram</option><option>WhatsApp</option><option>Telegram</option><option>Facebook / Messenger</option><option>X (Twitter)</option><option>LinkedIn</option><option>Snapchat</option><option>Other</option>
+      </select>
+    </label>
+    <label class="f" for="handle"><span id="handleLabel">Username or profile link</span>
+      <input type="text" id="handle" autocomplete="off" spellcheck="false">
+    </label>
+  </div>
+</section>
+
+<section class="card">
+  <div class="step"><span class="num">2</span><h2>Identity signals</h2></div>
+  <p class="small muted">Answer what you know. Unknowns count as a small risk, never as a pass.</p>
+  <div id="idq"></div>
+  <div class="links">
+    <span class="muted">Check their profile photo:</span>
+    <a href="https://lens.google.com/" target="_blank" rel="noopener">Google Lens reverse image search</a>
+    <a href="https://tineye.com/" target="_blank" rel="noopener">TinEye reverse image search</a>
+  </div>
+</section>
+
+<section class="card">
+  <div class="step"><span class="num">3</span><h2>Reported history</h2></div>
+  <p class="small muted">Run these searches, then record what you found. This page cannot search for you yet; the launch version does it on a server.</p>
+  <div class="links" id="searchLinks"></div>
+  <div id="repq"></div>
+</section>
+
+<section class="card">
+  <div class="step"><span class="num">4</span><h2>Conversation behaviour</h2></div>
+  <label class="f" for="chat">Paste the chat (it stays in this browser and is never uploaded)
+    <textarea id="chat" spellcheck="false" placeholder="Paste or type the messages they sent you"></textarea>
+  </label>
+  <div id="convOut"></div>
+  <div class="btns"><button type="button" class="primary" id="run2">See result</button></div>
+</section>
+
+<section class="card" id="evidence">
+  <div class="step"><span class="num">5</span><h2>Your evidence</h2></div>
+  <p class="small muted">Add screenshots, payment receipts or an exported chat.</p>
+  <div class="note" id="evHonest">
+    <strong>What happens to your files</strong>
+    <ul class="plain" style="margin-top:6px">
+      <li><strong>They never leave this device.</strong> Nothing is uploaded. We cannot see, store or share your files, and neither can the person you are checking.</li>
+      <li><strong>They are gone when you close or refresh this page.</strong> Keep your own copies. You will need them for a report.</li>
+      <li><strong>A file changes the score only if you ask.</strong> Tap "Read text" on a screenshot and its words are read here, on this device, then added to step 4 where you can see and correct them. Reading works for English text and can make mistakes. PDFs are not read.</li>
+      <li><strong>Adding files alone does nothing to the score.</strong> Nobody can raise a score against a person by piling on unrelated files.</li>
+      <li><strong>Your files are for you.</strong> They are listed in your evidence summary so you can attach them when you report.</li>
+    </ul>
+  </div>
+  <label class="drop" id="drop" for="files">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5M7.5 9.5L12 5l4.5 4.5M5 19h14"/></svg>
+    <strong>Choose files or drop them here</strong>
+    <span class="small muted">Images, PDF or .txt. Up to 10 files, 10 MB each.</span>
+    <input type="file" id="files" multiple accept="image/*,.pdf,.txt,text/plain,application/pdf">
+  </label>
+  <p class="small" id="evMsg" aria-live="polite"></p>
+  <ul class="evlist" id="evList"></ul>
+  <label class="f" for="why">In your own words, why does this feel like a scam?
+    <textarea id="why" style="min-height:90px;font-family:var(--body);font-size:15px" placeholder="For example: they asked me to pay a fee before I could withdraw my earnings"></textarea>
+  </label>
+  <div class="btns"><button type="button" id="cpEv">Copy evidence summary</button></div>
+  <p class="small muted" id="evState">The summary lists the profile, your result, your note and your file names, ready to paste into a report. It contains file names only, never the files themselves.</p>
+</section>
+
+<section class="card" id="consent">
+  <div class="step"><span class="num">6</span><h2>Ask them to become visible</h2></div>
+  <p class="small" id="consentText"></p>
+  <div class="btns"><button type="button" class="primary" id="mkReq">Create consent request</button><button type="button" id="cpReq" hidden>Copy message</button></div>
+  <div class="msg" id="reqMsg" hidden></div>
+  <p class="small muted" id="cpState"></p>
+  <p class="note">Draft limit: the request is a message you send yourself. At launch they open a link, prove the account is theirs, and choose which details to share. If they decline, you get nothing and they are not told your result.</p>
+</section>
+
+<section class="card" id="report">
+  <div class="step"><span class="num">7</span><h2>Send your report</h2></div>
+  <p class="small muted">You decide where it goes. Parakh sends nothing itself. It opens your own email app or the official form, and you attach your files there. Reporting is always free.</p>
+  <div class="q">
+    <h3 id="h-country">Where are you?</h3>
+    <div class="seg" role="radiogroup" aria-labelledby="h-country">
+      <label><input type="radio" name="country" id="country-in" value="in"><span>India</span></label>
+      <label><input type="radio" name="country" id="country-us" value="us"><span>United States</span></label>
+      <label><input type="radio" name="country" id="country-other" value="other"><span>Elsewhere</span></label>
+    </div>
+  </div>
+  <p class="note" id="urgent" hidden></p>
+  <div id="sendOut"></div>
+  <p class="small muted">Report to the platform and the authorities. Do not post an accusation naming the person. A risk score is not proof.</p>
+</section>
+
+</div>
+
+<div class="view" id="view-learn" hidden>
+  <section class="card">
+    <h2>Five rules that stop most scams</h2>
+    <p class="small muted">This page is free for everyone and needs no sign-up.</p>
+    <ol class="rules">
+      <li><span><strong>Slow down.</strong> Anyone who says "now or never" is rushing you on purpose.</span></li>
+      <li><span><strong>Codes are keys.</strong> Never share an OTP, password or PIN, even with a friend's account that asks.</span></li>
+      <li><span><strong>Money to strangers does not come back.</strong> Gift cards, crypto and instant transfers are almost impossible to reverse.</span></li>
+      <li><span><strong>Check outside the chat.</strong> Call the person, the bank or the company on a number you find yourself.</span></li>
+      <li><span><strong>Tell someone.</strong> Scams depend on secrecy. Saying it out loud to one trusted person usually breaks the spell.</span></li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Threats to know</h2>
+    <div class="seg" role="radiogroup" aria-label="Who is reading">
+      <label><input type="radio" name="aud" id="aud-kid" value="kid" checked><span>I am a student (under 18)</span></label>
+      <label><input type="radio" name="aud" id="aud-adult" value="adult"><span>I am an adult</span></label>
+    </div>
+    <p class="note" id="audNote"></p>
+    <div class="lgrid" id="lcards"></div>
+  </section>
+
+  <section class="card">
+    <h2>Scam or safe? Try four messages</h2>
+    <div class="lgrid" id="quiz"></div>
+    <p class="small" id="quizScore" aria-live="polite"></p>
+  </section>
+
+  <section class="card">
+    <h2>Where to get help</h2>
+    <div class="lgrid">
+      <div class="lcard"><h3>India</h3>
+        <span>Money lost: call <a href="tel:1930">1930</a></span>
+        <span>Any cybercrime: <a href="https://cybercrime.gov.in/" target="_blank" rel="noopener">cybercrime.gov.in</a></span>
+        <span>Under 18 and need help: Childline <a href="tel:1098">1098</a>, free, 24 hours</span>
+        <span>Suspicious call or message: <a href="https://sancharsaathi.gov.in/sfc" target="_blank" rel="noopener">Chakshu on Sanchar Saathi</a></span>
+      </div>
+      <div class="lcard"><h3>United States</h3>
+        <span>Any scam: <a href="https://reportfraud.ftc.gov/" target="_blank" rel="noopener">ReportFraud.ftc.gov</a></span>
+        <span>Online crime: <a href="https://www.ic3.gov/" target="_blank" rel="noopener">ic3.gov</a> or 1-800-CALL-FBI</span>
+        <span>Private image of someone under 18: <a href="https://takeitdown.ncmec.org/" target="_blank" rel="noopener">Take It Down</a>, free and anonymous</span>
+      </div>
+    </div>
+    <p class="small muted">In immediate danger anywhere, call your local emergency number.</p>
+  </section>
+
+  <section class="card">
+    <h2>Sources</h2>
+    <div class="links">
+      <a href="https://www.ftc.gov/news-events/data-visualizations/data-spotlight/2026/04/reported-losses-scams-social-media-eight-times-higher-2020" target="_blank" rel="noopener">FTC Data Spotlight on social media scams, April 2026</a>
+      <a href="https://www.fbi.gov/how-we-can-help-you/safety-resources/scams-and-safety/common-scams-and-crimes/sextortion" target="_blank" rel="noopener">FBI guidance on sextortion</a>
+      <a href="https://takeitdown.ncmec.org/" target="_blank" rel="noopener">NCMEC Take It Down</a>
+      <a href="https://cybercrime.gov.in/" target="_blank" rel="noopener">National Cyber Crime Reporting Portal, India</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <strong>What this check cannot tell you</strong>
+  <span>It cannot see reports held privately by Instagram, WhatsApp, Telegram or any platform, so no result means "no scam reported anywhere".</span>
+  <span>A low score means no red flags in what you checked. A patient scammer can pass. A high score is a warning, not a finding of guilt.</span>
+  <span>Parakh is a working name. Scores come from fixed rules shown on this page, not from a database of people.</span>
+</footer>
+</div>
+
+<button type="button" class="more" id="more" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>More below</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+
+/* ---------- rules ---------- */
+var CONV=[
+ {label:"Asks for login codes, passwords or remote access",w:30,re:/\b(otp|one[- ]time (password|code)|verification code|password|cvv|pin (number|code)|screen ?shar(e|ing)|anydesk|teamviewer|seed phrase|recovery phrase|card number)\b/gi},
+ {label:"Asks you to send money or pay a fee",w:25,re:/\b(send (me )?(the |some )?money|transfer (the )?(money|amount|funds)|deposit|registration fee|processing fee|advance (payment|fee)|pay (the |a )?(fee|charge|tax)|security deposit)\b/gi},
+ {label:"Wants payment that is hard to trace or reverse",w:25,re:/\b(gift ?cards?|crypto(currency)?|bitcoin|btc|usdt|ethereum|wire transfer|western union|moneygram|zelle|cash ?app|google play card|itunes card|steam card)\b/gi},
+ {label:"Promises guaranteed or unusually high returns",w:25,re:/\b(guaranteed|double your|risk[- ]free|\d+ ?% (profit|returns?)|profit (daily|every day|weekly)|daily (profit|income|returns?)|trading platform|investment (opportunity|plan|group)|forex signals?)\b/gi},
+ {label:"Claims to be police, customs, a bank or a tax office",w:22,re:/\b(customs|police|cbi|irs|income tax|narcotics|digital arrest|arrest warrant|kyc|account (will be|is) (blocked|suspended|frozen)|bank (officer|manager|official)|legal action)\b/gi},
+ {label:"Offers a prize, easy job or easy income",w:18,re:/\b(you (have |'ve )?won|lottery|lucky draw|prize money|part[- ]time job|work from home|extra income|like (videos|posts) (and|to) earn|task[- ]based)\b/gi},
+ {label:"Pressures you to act quickly",w:12,re:/\b(urgent(ly)?|immediately|right now|act fast|hurry|last chance|limited (slots?|seats?|time)|only today|within \d+ (minutes?|hours?)|before midnight)\b/gi},
+ {label:"Asks you to keep it secret",w:12,re:/\b(don'?t tell (anyone|anybody|your \w+)|keep (this|it) (between us|secret|private)|private group)\b/gi},
+ {label:"Fast affection or a hardship story",w:12,re:/\b(my love|darling|sweetheart|soulmate|i love you|hi dear|hello dear|oil rig|military (base|doctor)|stuck (abroad|overseas|at the airport)|hospital bill)\b/gi},
+ {label:"Pushes you to another app",w:10,re:/\b(continue|move|chat|talk|message me|add me|text me|contact me)\b[^.\n]{0,25}\b(telegram|whatsapp|signal|hangouts|wechat)\b/gi},
+ {label:"Sends shortened or invite links",w:8,re:/\b(bit\.ly|tinyurl\.com|cutt\.ly|rb\.gy|is\.gd|shorturl\.at)\/\S+|\bt\.me\/\+\S+/gi}
+];
+var IDQ=[
+ {id:"age",q:"How old is the account?",o:[["Over a year",0,1],["3 to 12 months",8,1],["Under 3 months",20,1],["Don't know",6,0]]},
+ {id:"photo",q:"Does their profile photo appear elsewhere under another name?",o:[["No, I searched",0,1],["Yes",35,1],["Not checked",8,0]]},
+ {id:"mutual",q:"Does anyone you know in real life know them?",o:[["Yes",0,1],["No",12,1],["Don't know",6,0]]},
+ {id:"video",q:"Have they joined a live video call or met you?",o:[["Yes",0,1],["Refused or keeps making excuses",25,1],["Haven't asked",8,0]]},
+ {id:"name",q:"Do payment or ID details they gave match the profile name?",o:[["Match",0,1],["Different name",25,1],["None given",0,0]]}
+];
+var REPQ={id:"rep",q:"What did the searches show?",o:[["Nothing, I searched",0,1],["One unverified complaint",35,1],["Several independent reports",80,1],["An official warning names them",100,1],["Not searched yet",15,0]]};
+
+var EXAMPLE={platform:"Instagram",handle:"example_trader_01",
+ chat:"example_trader_01: Hi dear, I saw your profile. Interested in extra income?\nMe: What kind?\nexample_trader_01: Our trading platform gives guaranteed 30% profit daily. Many members are earning.\nMe: How does it work?\nexample_trader_01: Just deposit 500 USDT today. Limited slots, you must act fast.\nexample_trader_01: Let's continue on Telegram, add me there. Don't tell anyone, it is a private group.\nexample_trader_01: Then send me the OTP you receive to activate your account.",
+ ans:{age:2,photo:2,mutual:1,video:1,name:2,rep:4}};
+var EMPTY={platform:"Instagram",handle:"",chat:"",ans:{age:3,photo:2,mutual:2,video:2,name:2,rep:4}};
+
+/* ---------- free uses and payment ---------- */
+var FREE=3,PACK=10,PRICE=49,UPI="8193835370@ybl";
+var store={freeUsed:0,credits:0,seen:[],utr:[],country:""};
+try{var sv=JSON.parse(localStorage.getItem("parakh.v1"));if(sv&&typeof sv==="object"){["freeUsed","credits","seen","utr","country"].forEach(function(k){if(sv[k]!=null)store[k]=sv[k]})}}catch(e){}
+function save(){try{localStorage.setItem("parakh.v1",JSON.stringify(store))}catch(e){}}
+function keyOf(p,h){return p+"|"+h.toLowerCase()}
+var EXKEY=keyOf(EXAMPLE.platform,EXAMPLE.handle);
+function avail(){return Math.max(0,FREE-store.freeUsed)+store.credits}
+
+/* ---------- build questions ---------- */
+function buildQ(host,q){
+  var h='<div class="q"><h3 id="h-'+q.id+'">'+esc(q.q)+'</h3><div class="seg" role="radiogroup" aria-labelledby="h-'+q.id+'">';
+  q.o.forEach(function(o,i){h+='<label><input type="radio" name="'+q.id+'" id="'+q.id+'-'+i+'" value="'+i+'"><span>'+esc(o[0])+'</span></label>'});
+  host.insertAdjacentHTML("beforeend",h+'</div></div>');
+}
+IDQ.forEach(function(q){buildQ($("idq"),q)});
+buildQ($("repq"),REPQ);
+function load(d){
+  $("platform").value=d.platform;$("handle").value=d.handle;$("chat").value=d.chat;
+  Object.keys(d.ans).forEach(function(k){var el=$(k+"-"+d.ans[k]);if(el)el.checked=true});
+}
+function pick(q){var el=document.querySelector('input[name="'+q.id+'"]:checked');return q.o[el?+el.value:q.o.length-1]}
+
+/* ---------- scoring ---------- */
+function level(s){return s>=60?"high":s>=25?"caution":"low"}
+var NAMES={low:"Low",caution:"Caution",high:"High",open:"Not checked"};
+
+function analyseChat(text){
+  var hits=[],spans=[],score=0;
+  CONV.forEach(function(r){
+    var m=Array.from(text.matchAll(r.re));
+    if(m.length){score+=r.w;hits.push({label:r.label,w:r.w,n:m.length});
+      m.forEach(function(x){spans.push([x.index,x.index+x[0].length])});}
+  });
+  spans.sort(function(a,b){return a[0]-b[0]});
+  var out="",pos=0;
+  spans.forEach(function(s){if(s[0]<pos)return;out+=esc(text.slice(pos,s[0]))+"<mark>"+esc(text.slice(s[0],s[1]))+"</mark>";pos=s[1]});
+  out+=esc(text.slice(pos));
+  return {score:Math.min(100,score),hits:hits,html:out};
+}
+
+function cleanHandle(v){
+  v=v.trim().replace(/^https?:\/\/(www\.)?[^\/]+\//i,"").replace(/[?#].*$/,"").replace(/\/+$/,"").replace(/^@/,"");
+  return v;
+}
+
+var reqCode="",evidence=[],last={open:false,platform:"",handle:"",title:"",overall:0,hits:[],lv:"open",factors:[],fine:[],scores:[0,0,0]};
+function render(){
+  var platform=$("platform").value,handle=cleanHandle($("handle").value),chat=$("chat").value;
+  $("handleLabel").textContent=platform==="WhatsApp"?"Their phone number, with country code":"Their username or profile link";
+  $("handle").placeholder=platform==="WhatsApp"?"+91 ...":"@username";
+  // identity
+  var idScore=0,idKnown=0;
+  IDQ.forEach(function(q){var o=pick(q);idScore+=o[1];idKnown+=o[2]});
+  idScore=Math.min(100,idScore);
+  // reports
+  var rep=pick(REPQ),repScore=rep[1],repKnown=rep[2];
+  // conversation
+  var hasChat=chat.trim().length>=40,conv=analyseChat(chat);
+
+  var coverage=(idKnown>=3?1:0)+repKnown+(hasChat?1:0);
+  var overall=Math.round(.45*conv.score+.25*idScore+.30*repScore);
+  var peak=Math.max(conv.score,idScore,repScore);
+  if(peak>=70)overall=Math.max(overall,70);
+  var lv=level(overall);
+  if(lv==="low"&&coverage<3)lv="open";
+
+  var V={
+    open:["Not enough checked yet","Finish all three checks before relying on this. An unchecked profile is unknown, not safe."],
+    low:["No red flags found","Nothing you checked points to a scam. That is not proof the person is genuine, so keep money and codes to yourself until they verify."],
+    caution:["Slow down","Some warning signs are present. Hold back money, codes and documents until they are cleared up. Taking your time costs you nothing."],
+    high:["This looks like a scam","You did the right thing by checking. Do not pay or share codes. Keep the chat as evidence and report the account using the links below."]
+  }[lv];
+  var key=keyOf(platform,handle),open=!!handle&&(key===EXKEY||store.seen.indexOf(key)>=0),left=avail();
+  if(!open){lv="open";V=!handle?["Enter a profile","Add the username or number in step 1, fill in the checks, then get the result."]
+    :left>0?["Ready to check","Fill in the three checks below, then get the result. Editing the same profile afterwards costs nothing."]
+    :["Free checks used","You have used your "+FREE+" free checks. Pay once to unlock "+PACK+" more."];}
+  $("verdict").dataset.level=lv;
+  $("who").textContent=handle?platform+" · "+handle:"No profile entered";
+  $("vtitle").textContent=V[0];$("vtext").textContent=V[1];$("vscore").textContent=open?overall:"–";
+  $("idPlat").textContent=platform;$("idHandle").textContent=handle||(platform==="WhatsApp"?"+00 00000 00000":"@username");
+  $("idTag").textContent=open?V[0]:"Not checked yet";$("idTag").className="pill "+lv;
+  $("idBadge").setAttribute("class","b-"+lv);$("idMark").textContent=lv==="low"?"✓":lv==="open"?"?":"!";
+  var factors=[],fine=[];
+  IDQ.forEach(function(q){var o=pick(q),t=q.q.replace(/\?$/,"")+": "+o[0];if(o[2]&&o[1]>0)factors.push({a:"Identity",l:t,w:o[1]});else if(o[2])fine.push(t)});
+  if(repKnown&&repScore>0)factors.push({a:"Reported history",l:"Searches showed: "+rep[0].toLowerCase(),w:repScore});else if(repKnown)fine.push("Searches found no reports");
+  conv.hits.forEach(function(h){factors.push({a:"Conversation",l:h.label,w:h.w})});
+  if(hasChat&&!conv.hits.length)fine.push("No scam phrases in the chat");
+  factors.sort(function(a,b){return b.w-a.w});
+  last={open:open,platform:platform,handle:handle,title:V[0],overall:overall,hits:conv.hits,lv:lv,factors:factors,fine:fine,scores:[idScore,repScore,conv.score]};
+  $("dash").hidden=!open;
+  if(open){
+    var top=factors.length?factors[0].w:1;
+    $("dashBody").innerHTML='<div class="tiles3"><div class="tile '+lv+'"><b>'+overall+'</b><span>Overall risk out of 100</span></div><div class="tile"><b>'+factors.length+'</b><span>Warning signs found</span></div><div class="tile"><b>'+evidence.length+'</b><span>Evidence files added</span></div></div>'+
+      '<div><h3 style="margin-bottom:10px">What raised the risk most</h3>'+(factors.length?'<div class="frows">'+factors.slice(0,8).map(function(f){return '<div class="frow"><div class="frow-top"><span>'+esc(f.l)+'</span><span class="pts">+'+f.w+'</span></div><div class="area">'+f.a+'</div><div class="track"><div class="fill high" style="width:'+Math.round(100*f.w/top)+'%"></div></div></div>'}).join("")+'</div>':'<p class="small muted">No specific warning signs were recorded.</p>')+'</div>'+
+      (fine.length?'<div><h3 style="margin-bottom:8px">What looked fine</h3><div class="finechips">'+fine.map(function(s){return '<span class="chip">'+esc(s)+'</span>'}).join("")+'</div></div>':'')+
+      '<p class="small muted">This is a risk estimate from the checks you entered. It is not proof, so share it with the platform or the authorities, not in public.</p>';
+  }
+  $("garc").setAttribute("class","gval "+lv);
+  $("garc").style.strokeDasharray=(open?Math.max(2,overall)*1.696:0)+" 170";
+  $("gateRun").hidden=!(handle&&!open&&left>0);
+  $("gatePay").hidden=!(handle&&!open&&left<=0);
+  var fl=Math.max(0,FREE-store.freeUsed);
+  $("quota").textContent=(fl>0?fl+" of "+FREE+" free checks left":"Free checks used")+(store.credits?" · "+store.credits+" paid checks left":"")+". Rechecking a profile you already checked is free.";
+
+  var rows=[["Identity signals",idScore,idKnown>=3],["Reported history",repScore,!!repKnown],["Conversation behaviour",conv.score,hasChat]];
+  $("bars").innerHTML=rows.map(function(r){
+    var l=level(r[1]);if(l==="low"&&!r[2])l="open";
+    return '<div><div class="bar-top"><span>'+r[0]+'</span><span class="pill '+l+'">'+NAMES[l]+(l==="open"?"":" · "+r[1])+'</span></div><div class="track"><div class="fill '+l+'" style="width:'+Math.max(3,r[1])+'%"></div></div></div>';
+  }).join("");
+
+  // conversation detail
+  var co="";
+  if(!hasChat){co='<p class="small muted">Paste at least a few messages to score the conversation.</p>'}
+  else if(!conv.hits.length){co='<p class="small">No scam phrases matched. Rules catch common wording only, so read the tone yourself too.</p>'}
+  else{
+    co='<ul class="flags">'+conv.hits.map(function(h){return '<li><span class="w">+'+h.w+'</span><span>'+esc(h.label)+' <span class="muted">('+h.n+(h.n>1?" matches":" match")+')</span></span></li>'}).join("")+'</ul><div class="chatview" tabindex="0" aria-label="Chat with matched phrases highlighted">'+conv.html+'</div>';
+  }
+  if(!open){$("bars").innerHTML="";co='<p class="small muted">'+(hasChat?"Chat added. Get the result to see what it flags.":"Paste at least a few messages to score the conversation.")+'</p>'}
+  $("convOut").innerHTML=co;
+
+  // search links
+  if(handle){
+    var q=function(t){return "https://www.google.com/search?q="+encodeURIComponent(t)};
+    var h='"'+handle+'"';
+    $("searchLinks").innerHTML=
+      '<a target="_blank" rel="noopener" href="'+q(h+" scam OR fraud OR fake OR scammer")+'">Search the web for '+esc(handle)+' with scam reports</a>'+
+      '<a target="_blank" rel="noopener" href="'+q(h+" "+platform+" complaint OR review OR warning")+'">Search '+esc(platform)+' complaints and warnings</a>'+
+      '<a target="_blank" rel="noopener" href="'+q(h+" reddit OR quora OR trustpilot")+'">Search forums and review sites</a>';
+  }else{$("searchLinks").innerHTML='<span class="muted">Enter the username or number in step 1 to get search links.</span>'}
+
+  // consent
+  var ok=lv==="low"&&!!handle;
+  $("consent").classList.toggle("locked",!ok);
+  $("mkReq").disabled=!ok;
+  $("consentText").textContent=ok
+    ?"The check came back clean. You can now ask "+handle+" whether they are willing to verify the account and share their details with you. They decide. You see their details only if they say yes."
+    :"This opens only after a low-risk result on all three checks. Nobody's details are shown without their consent, and a risky profile is never invited.";
+  if(!ok){$("reqMsg").hidden=true;$("cpReq").hidden=true;$("cpState").textContent=""}
+  else if(!$("reqMsg").hidden){$("reqMsg").textContent=reqText(platform,handle)}
+  renderSend(platform,handle);
+  updMore();
+}
+function updMore(){var d=document.documentElement;$("more").hidden=window.innerHeight+window.scrollY>=d.scrollHeight-80}
+window.addEventListener("scroll",updMore,{passive:true});window.addEventListener("resize",updMore);
+$("more").addEventListener("click",function(){
+  var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollBy({top:Math.round(window.innerHeight*.8),behavior:calm?"auto":"smooth"});
+});
+function reqText(platform,handle){
+  return "Hi. Before we go further I would like to confirm who I am talking to. I ran a safety check on our conversation and it found no red flags. Are you willing to verify your "+platform+" account ("+handle+") and share your verified name with me? It is your choice, and nothing is shared unless you agree.\nRequest code: "+reqCode;
+}
+
+$("mkReq").addEventListener("click",function(){
+  reqCode="PK-"+Math.random().toString(36).slice(2,8).toUpperCase();
+  $("reqMsg").hidden=false;$("cpReq").hidden=false;$("cpState").textContent="";
+  $("reqMsg").textContent=reqText($("platform").value,cleanHandle($("handle").value));
+});
+$("cpReq").addEventListener("click",function(){
+  var t=$("reqMsg").textContent;
+  try{navigator.clipboard.writeText(t).then(function(){$("cpState").textContent="Copied. Paste it into your chat with them."},function(){$("cpState").textContent="Copy was blocked. Select the message and copy it by hand."})}
+  catch(e){$("cpState").textContent="Copy was blocked. Select the message and copy it by hand."}
+});
+/* ---------- evidence (kept in this browser only) ---------- */
+var MAXF=10,MAXB=10*1024*1024;
+function fsize(b){return b<1024?b+" B":b<1048576?Math.round(b/1024)+" KB":(b/1048576).toFixed(1)+" MB"}
+function isText(f){return f.type==="text/plain"||/\.txt$/i.test(f.name)}
+function okType(f){return /^image\//.test(f.type)||f.type==="application/pdf"||/\.pdf$/i.test(f.name)||isText(f)}
+function renderEv(){
+  $("evList").innerHTML=evidence.map(function(e,i){
+    var f=e.file,th=e.url?'<img src="'+e.url+'" alt="">':(isText(f)?"TXT":"PDF");
+    return '<li><div class="th">'+th+'</div><div class="meta"><div>'+esc(f.name)+'</div><div class="muted small">'+fsize(f.size)+'</div></div><div class="evact">'+
+      (isText(f)?'<button type="button" data-use="'+i+'">Score this text</button>':'')+
+      (e.url?'<button type="button" data-ocr="'+i+'"'+(e.ocr==="busy"?" disabled":"")+'>'+(e.ocr==="busy"?"Reading...":e.ocr==="done"?"Read again":"Read text")+'</button>':'')+
+      '<button type="button" data-rm="'+i+'" aria-label="Remove '+esc(f.name)+'">Remove</button></div></li>';
+  }).join("");
+  render();
+}
+function addFiles(list){
+  var skipped=[];
+  Array.from(list||[]).forEach(function(f){
+    if(evidence.length>=MAXF){skipped.push(f.name+" (limit of "+MAXF+" files)");return}
+    if(!okType(f)){skipped.push(f.name+" (use an image, PDF or .txt)");return}
+    if(f.size>MAXB){skipped.push(f.name+" (over 10 MB)");return}
+    var url="";if(/^image\//.test(f.type)){try{url=URL.createObjectURL(f)}catch(e){}}
+    evidence.push({file:f,url:url});
+  });
+  $("evMsg").textContent=skipped.length?"Not added: "+skipped.join(", ")+".":evidence.length?evidence.length+(evidence.length>1?" files":" file")+" added. Kept on this device only. Tap Read text on a screenshot to score its words.":"";
+  renderEv();
+}
+/* text recognition runs in this browser; the image is never uploaded */
+var ocrReady=null,ocrProg=null;
+function getOcr(){
+  if(!ocrReady){
+    var base=new URL("ocr/",document.baseURI).href;
+    var add=function(f){return new Promise(function(res,rej){var s=document.createElement("script");s.src=base+f;s.onload=res;s.onerror=rej;document.head.appendChild(s)})};
+    ocrReady=Promise.all([add("tesseract.min.js"),add("eng-data.js")])
+      .then(function(){var bin=atob(window.PARAKH_ENG_GZ),u8=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);window.PARAKH_ENG_GZ="";
+        return window.Tesseract.createWorker([{code:"eng",data:u8}],1,{workerPath:base+"worker.min.js",corePath:base,workerBlobURL:false,cacheMethod:"none",
+        logger:function(m){if(ocrProg&&m.status==="recognizing text")ocrProg(m.progress)}})});
+    ocrReady.catch(function(){ocrReady=null});
+  }
+  return ocrReady;
+}
+function readImage(it){
+  if(!it||it.ocr==="busy")return;
+  var name=it.file.name;it.ocr="busy";renderEv();
+  $("evMsg").textContent="Reading "+name+" on this device. The first image takes longer.";
+  ocrProg=function(p){$("evMsg").textContent="Reading "+name+": "+Math.round(p*100)+"%"};
+  var slow=new Promise(function(_,rej){setTimeout(function(){rej(new Error("timeout"))},90000)});
+  Promise.race([getOcr().then(function(w){return w.recognize(it.file)}),slow]).then(function(r){
+    var t=((r&&r.data&&r.data.text)||"").replace(/[ \t]+\n/g,"\n").trim();
+    if(t.length<3){it.ocr="";renderEv();$("evMsg").textContent="No readable text was found in "+name+". Type what it says into step 4.";return}
+    var c=$("chat");c.value=(c.value.trim()?c.value.trim()+"\n":"")+t.slice(0,8000);
+    it.ocr="done";renderEv();
+    $("evMsg").textContent="Text from "+name+" was added to step 4 and now counts in the score. Check it there, because reading can make mistakes.";
+  }).catch(function(){it.ocr="";renderEv();$("evMsg").textContent="This device could not read "+name+". Type what it says into step 4."});
+}
+$("files").addEventListener("change",function(){addFiles(this.files);this.value=""});
+["dragenter","dragover"].forEach(function(t){$("drop").addEventListener(t,function(e){e.preventDefault();$("drop").classList.add("over")})});
+["dragleave","drop"].forEach(function(t){$("drop").addEventListener(t,function(e){e.preventDefault();$("drop").classList.remove("over")})});
+$("drop").addEventListener("drop",function(e){if(e.dataTransfer)addFiles(e.dataTransfer.files)});
+$("evList").addEventListener("click",function(ev){
+  var b=ev.target.closest("button");if(!b)return;
+  if(b.dataset.rm!=null){var x=evidence.splice(+b.dataset.rm,1)[0];if(x&&x.url){try{URL.revokeObjectURL(x.url)}catch(e){}}$("evMsg").textContent="";renderEv()}
+  else if(b.dataset.ocr!=null){readImage(evidence[+b.dataset.ocr])}
+  else if(b.dataset.use!=null){var it=evidence[+b.dataset.use];if(!it)return;
+    it.file.text().then(function(t){var c=$("chat");c.value=(c.value.trim()?c.value.trim()+"\n":"")+t.slice(0,20000);render();$("evMsg").textContent="Text from "+it.file.name+" was added to the conversation check in step 4."},
+      function(){$("evMsg").textContent="That file could not be read. Open it and paste the text into step 4."});}
+});
+$("cpEv").addEventListener("click",function(){
+  var t=buildSummary(),fail=function(){$("evState").textContent="Copy was blocked on this device. Take a screenshot of this section instead."};
+  try{navigator.clipboard.writeText(t).then(function(){$("evState").textContent="Summary copied. Paste it into your report and attach the files yourself."},fail)}catch(e){fail()}
+});
+
+function buildSummary(){
+  var L=["Scam evidence summary","Date: "+new Date().toLocaleString(),"Profile: "+(last.handle?last.platform+" - "+last.handle:"not entered")];
+  if(last.open){L.push("Check result: "+last.title+" (risk "+last.overall+"/100)");
+    if(last.hits.length){L.push("Warning signs in the chat:");last.hits.forEach(function(h){L.push("- "+h.label)})}}
+  var w=$("why").value.trim();if(w){L.push("Why I think this is a scam:",w)}
+  if(evidence.length){L.push("Files I hold as evidence:");evidence.forEach(function(e){L.push("- "+e.file.name+" ("+fsize(e.file.size)+")")})}
+  return L.join("\n");
+}
+
+/* ---------- send the report: platform first, then authorities ---------- */
+var META_IN={form:"https://help.meta.com/requests/1371776380779082/",label:"Meta Grievance Officer complaint form, India"};
+var APP="Open their profile, tap the three dots, then Report.";
+var PLAT={
+ "Instagram":{app:APP,india:[META_IN],any:[{form:"https://help.instagram.com/",label:"Instagram Help Centre"}]},
+ "Facebook / Messenger":{app:APP,india:[META_IN],any:[{form:"https://www.facebook.com/help/",label:"Facebook Help Centre"}]},
+ "WhatsApp":{app:"Open the chat, tap their name, then Report. You can also use Settings, Help, Contact us.",india:[{mail:"grievance_officer_wa@support.whatsapp.com",label:"WhatsApp Grievance Officer, India"}],any:[{form:"https://faq.whatsapp.com/",label:"WhatsApp Help Centre"}]},
+ "Telegram":{app:APP,india:[{mail:"grievance-in@telegram.org",label:"Telegram Grievance Officer, India"}],any:[{mail:"abuse@telegram.org",label:"Telegram abuse team"},{form:"https://t.me/notoscam",label:"@notoscam, Telegram's scam report account"}]},
+ "X (Twitter)":{app:APP,india:[{form:"https://help.x.com/en/rules-and-policies/x-india#item1",label:"X Grievance Officer, India (form linked on this page)"}],any:[{form:"https://help.x.com/",label:"X Help Centre"}]},
+ "LinkedIn":{app:"Open their profile, tap More, then Report or block.",india:[{form:"https://www.linkedin.com/help/linkedin/answer/129239",label:"LinkedIn Grievance Officer, India (form linked on this page)"}],any:[{form:"https://www.linkedin.com/help/linkedin",label:"LinkedIn Help"}]},
+ "Snapchat":{app:"Press and hold their name, then Manage Friendship, then Report.",india:[{mail:"grievance-officer-in@snap.com",label:"Snapchat Grievance Officer, India"}],any:[{form:"https://help.snapchat.com/",label:"Snapchat Support"}]},
+ "Other":{app:"Use the Report option on their profile inside the app.",india:[],any:[]}
+};
+function gov(title,body){return '<div class="contact"><strong>'+title+'</strong>'+body+'</div>'}
+function ext(u,t){return '<a href="'+u+'" target="_blank" rel="noopener">'+t+'</a>'}
+var GOV={
+ "in":gov("National Cyber Crime Helpline",'<span class="bignum">1930</span><span>Call first if money was lost. <a href="tel:1930">Call 1930</a></span>')+
+   gov("National Cyber Crime Reporting Portal",'<span>File a written complaint and keep the acknowledgement number.</span>'+ext("https://cybercrime.gov.in/","Open cybercrime.gov.in"))+
+   gov("Chakshu on Sanchar Saathi",'<span>Report the number behind a suspicious call, SMS or WhatsApp message. Use it when no money was lost.</span>'+ext("https://sancharsaathi.gov.in/sfc","Open Chakshu"))+
+   gov("Your local police cyber cell",'<span>Take your acknowledgement number and your evidence files with you.</span>'),
+ "us":gov("Federal Trade Commission",'<span>Report any scam, whether or not you lost money.</span>'+ext("https://reportfraud.ftc.gov/","Open ReportFraud.ftc.gov"))+
+   gov("FBI Internet Crime Complaint Center",'<span>Report online fraud, especially if money or crypto was sent.</span>'+ext("https://www.ic3.gov/","Open ic3.gov")),
+ "other":gov("Police or national cybercrime unit",'<span>Report to your local police or your country\'s cybercrime reporting service, and tell your bank. Take the evidence summary and your files.</span>')
+};
+var sentFor="",govFor="";
+function renderSend(platform,handle){
+  var c=store.country,out=$("sendOut"),u=$("urgent");
+  if(!c){u.hidden=true;out.innerHTML='<p class="small">Choose where you are to see the right contacts.</p>';return}
+  u.hidden=false;
+  u.innerHTML=c==="in"?'<strong>Lost money?</strong> Call <a href="tel:1930">1930</a> now, before anything else, then call your bank. Fast reporting gives the best chance of stopping the transfer.'
+    :'<strong>Lost money?</strong> Call your bank or card issuer now, before anything else, and ask them to stop or reverse the payment.';
+  var p=PLAT[platform]||PLAT.Other,list=(c==="in"?p.india:[]).concat(p.any),key=keyOf(platform,handle),sent=sentFor===key,showG=sent||govFor===key;
+  var pname=platform==="Other"?"the platform":platform;
+  var subj="Report of a suspected scam account"+(handle?": "+handle:"")+" on "+platform;
+  var body=buildSummary().slice(0,1400)+"\n\nMy screenshots are attached. Please review this account and take action.";
+  var h='<div class="stage"><h3>First: report to '+esc(pname)+'</h3><p class="small">In the app: '+esc(p.app)+'</p>';
+  list.forEach(function(x){
+    if(x.mail){h+='<div class="contact"><strong>'+esc(x.label)+'</strong><span class="addr">'+esc(x.mail)+'</span><div class="btns"><a class="btn" href="'+esc("mailto:"+x.mail+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body))+'">Open email draft</a><button type="button" data-copy="'+esc(x.mail)+'">Copy address</button></div></div>'}
+    else{h+='<div class="contact"><strong>'+esc(x.label)+'</strong>'+ext(x.form,"Open")+'</div>'}
+  });
+  if(!list.length)h+='<p class="small muted">No official contact is listed for this app. Use its in-app Report option.</p>';
+  if(c==="in"&&p.india.length)h+='<p class="small muted">Under India\'s IT Rules a Grievance Officer must acknowledge a complaint within 24 hours. The email draft carries your evidence summary. Attach your files before sending.</p>';
+  h+='<label class="check" for="platSent"><input type="checkbox" id="platSent"'+(sent?" checked":"")+'><span>I have sent my report to '+esc(pname)+'</span></label></div>';
+  h+='<div class="stage"><h3>Next: report to the authorities</h3>';
+  h+=showG?GOV[c]:'<p class="small muted">These open once you tick the box above.</p><div class="btns"><button type="button" id="showGov">Show them now</button></div>';
+  out.innerHTML=h+'</div>';
+}
+$("sendOut").addEventListener("change",function(e){if(e.target.id==="platSent"){sentFor=e.target.checked?keyOf($("platform").value,cleanHandle($("handle").value)):""}});
+$("sendOut").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  if(b.id==="showGov"){govFor=keyOf($("platform").value,cleanHandle($("handle").value));render();return}
+  if(b.dataset.copy){var done=function(t){b.textContent=t};
+    try{navigator.clipboard.writeText(b.dataset.copy).then(function(){done("Copied")},function(){done("Copy blocked")})}catch(x){done("Copy blocked")}}
+});
+["in","us","other"].forEach(function(v){var el=$("country-"+v);if(store.country===v)el.checked=true;el.addEventListener("change",function(){store.country=v;save()})});
+
+/* ---------- knowledge page ---------- */
+var LEARN={
+ kid:{note:"If anything online scares you or feels wrong, tell a parent, teacher or another adult you trust. You will not be in trouble. It is never your fault when someone tricks or threatens you.",cards:[
+  ["Free coins, skins or followers","A message or video promises free game currency or followers if you log in through a link or share a code.","Never type your password on a link someone sent. Real giveaways do not need your login."],
+  ["A stranger who becomes a best friend fast","Someone new says they are your age, is very kind very quickly, asks you to move to a private chat and to keep it secret.","Keep chats where others can see them. A request for secrecy is the warning sign. Tell an adult."],
+  ["Photo blackmail","Someone asks for a private photo, then threatens to share it unless you pay or send more.","Stop replying. Do not pay. Keep the messages. Tell a trusted adult today. This is a crime against you, and help is free."],
+  ["Bullying online","Mean messages, group chats made to mock someone, or embarrassing photos shared without consent.","Screenshot it, block the account, report it in the app, and tell an adult. Do not answer back."],
+  ["A friend asks for a code","A friend's account says a code was sent to your phone by mistake and asks you to forward it.","That code unlocks your own account. Never share it. Call your friend, because their account may be stolen."],
+  ["Easy money for small tasks","You are offered pay for liking videos, or asked to receive money and pass it on to someone else.","Say no. Moving money for strangers can be a crime even if you did not know. Tell an adult."]]},
+ adult:{note:"If a child or teenager comes to you about something online: stay calm, thank them for telling you, do not take the phone away as punishment, save the evidence and report it together.",cards:[
+  ["Investment scams","A contact or group shows guaranteed profits on a trading or crypto platform. This type caused the largest reported losses of any social media scam in 2025: $1.1 billion (FTC).","Never let someone you met online direct your investments. Check the firm with your regulator before sending money."],
+  ["Shopping scams","An ad offers a deep discount, then nothing arrives or a fake arrives. This is the most reported social media scam (FTC).","Search the seller's name with the word scam. Pay with a card, which lets you dispute the charge."],
+  ["Romance scams","Affection grows fast, they can never video call or meet, then an emergency needs money. About $298 million was reported lost in 2025 to romance scams that began on social media (FTC).","Never send money or gifts to someone you have not met in person. Talk to a friend before you act."],
+  ["Fake officials","A caller or chat claims to be police, customs, a tax office or your bank and demands payment or threatens arrest.","Hang up. Officials do not take payment over chat or video call. Call the organisation on its published number."],
+  ["OTP, KYC and remote access","You are asked for a one-time code, to update KYC through a link, or to install a screen-sharing app.","Your bank never needs your OTP or your screen. Open the bank's own app instead of the link."],
+  ["Job and task scams","A job needs a registration fee, or small paid tasks lead to a request to deposit money to unlock earnings.","Real employers do not charge you to work. Stop at the first request for a deposit."]]}
+};
+function renderLearn(){
+  var a=$("aud-adult").checked?"adult":"kid",d=LEARN[a];
+  $("audNote").textContent=d.note;
+  $("lcards").innerHTML=d.cards.map(function(c){return '<div class="lcard"><h3>'+esc(c[0])+'</h3><span class="lab bad">Looks like</span><span>'+esc(c[1])+'</span><span class="lab good">Do this</span><span>'+esc(c[2])+'</span></div>'}).join("");
+}
+$("aud-kid").addEventListener("change",renderLearn);$("aud-adult").addEventListener("change",renderLearn);
+var QZ=[
+ ["Congrats! You won 5,000 game coins. Log in here to claim: bit.ly/claim-now",true,"It asks you to log in through a link. That is how accounts get stolen."],
+ ["Hi, it is Riya from class. Sir moved the test to Monday. Check the school group.",false,"No money, no code, no link, and you can confirm it in the school group."],
+ ["I sent a 6-digit code to your number by mistake. Can you forward it to me?",true,"That code is the key to your own account."],
+ ["Your parcel is held at customs. Pay 499 within 1 hour or face legal action.",true,"Pressure, a deadline and a payment demand together are a classic scam."]
+],qzAns={};
+function renderQuiz(){
+  $("quiz").innerHTML=QZ.map(function(q,i){var a=qzAns[i],fb="";
+    if(a!=null){var right=a===q[1];fb='<div class="fb '+(right?"ok":"no")+'">'+(right?"Correct. ":"Not quite. ")+(q[1]?"Scam. ":"Probably safe. ")+esc(q[2])+'</div>'}
+    return '<div class="lcard"><div class="bubble">'+esc(q[0])+'</div><div class="btns"><button type="button" data-q="'+i+'" data-a="1">Scam</button><button type="button" data-q="'+i+'" data-a="0">Safe</button></div>'+fb+'</div>'}).join("");
+  var n=Object.keys(qzAns).length,ok=QZ.filter(function(q,i){return qzAns[i]===q[1]}).length;
+  $("quizScore").textContent=n===QZ.length?"You got "+ok+" of "+QZ.length+". The pattern to remember: links to log in, codes, deadlines and payments.":n?n+" of "+QZ.length+" answered.":"";
+}
+$("quiz").addEventListener("click",function(e){var b=e.target.closest("button");if(!b||b.dataset.q==null)return;qzAns[+b.dataset.q]=b.dataset.a==="1";renderQuiz()});
+function route(){
+  var learn=location.hash==="#learn";
+  $("view-check").hidden=learn;$("view-learn").hidden=!learn;
+  $("tab-check")[learn?"removeAttribute":"setAttribute"]("aria-current","page");
+  $("tab-learn")[learn?"setAttribute":"removeAttribute"]("aria-current","page");
+  updMore();
+}
+window.addEventListener("hashchange",route);
+renderLearn();renderQuiz();route();
+
+/* ---------- downloadable report (drawn on this device) ---------- */
+function drawReport(){
+  var W=1000,P=48,S=2,C={ink:"#141a2e",muted:"#59617e",line:"#d8dbe8",accent:"#3a3fd0",low:"#1a7550",caution:"#955800",high:"#b92d27",open:"#59617e"};
+  function F(sz,wt,mono){return (wt||400)+" "+sz+"px "+(mono?'"IBM Plex Mono",monospace':'"IBM Plex Sans","Segoe UI",sans-serif')}
+  function paint(ctx,dry){
+    var y=0;
+    function text(t,sz,o){o=o||{};ctx.font=F(sz,o.wt,o.mono);var maxW=W-2*P,lh=Math.round(sz*1.4),lines=[];
+      String(t).split("\n").forEach(function(par){var cur="";
+        par.split(/(\s+)/).forEach(function(tok){
+          if(ctx.measureText(cur+tok).width>maxW&&cur.trim()){lines.push(cur);cur=tok.replace(/^\s+/,"")}else cur+=tok;
+          while(cur.length>1&&ctx.measureText(cur).width>maxW){var n=cur.length;while(n>1&&ctx.measureText(cur.slice(0,n)).width>maxW)n--;lines.push(cur.slice(0,n));cur=cur.slice(n)}
+        });lines.push(cur)});
+      if(!dry){ctx.fillStyle=o.color||C.ink;ctx.textBaseline="top";lines.forEach(function(l,i){ctx.fillText(l,P,y+i*lh)})}
+      y+=lines.length*lh+(o.gap==null?8:o.gap);
+    }
+    function bar(v,col,h){h=h||12;if(!dry){ctx.fillStyle=C.line;ctx.fillRect(P,y,W-2*P,h);ctx.fillStyle=col;ctx.fillRect(P,y,(W-2*P)*Math.max(0,Math.min(100,v))/100,h)}y+=h+14}
+    function rule(){if(!dry){ctx.fillStyle=C.line;ctx.fillRect(P,y,W-2*P,1)}y+=20}
+    var col=C[last.lv]||C.open;
+    if(!dry){ctx.fillStyle="#ffffff";ctx.fillRect(0,0,W,100000);ctx.fillStyle=C.accent;ctx.fillRect(0,0,W,10)}
+    y=40;
+    text("Parakh risk report",34,{wt:700,gap:4});
+    text("Generated "+new Date().toLocaleString(),15,{color:C.muted,gap:20});
+    rule();
+    text("ACCOUNT CHECKED",13,{color:C.muted,wt:600,gap:2});
+    text(last.platform+"  ·  "+last.handle,24,{mono:true,wt:500,gap:20});
+    text(last.title,30,{wt:700,color:col,gap:4});
+    text("Overall risk "+last.overall+" out of 100",18,{gap:10});
+    bar(last.overall,col,18);y+=6;
+    ["Identity signals","Reported history","Conversation behaviour"].forEach(function(n,i){var v=last.scores[i];text(n+": "+v+" / 100",16,{wt:600,gap:6});bar(v,C[level(v)])});
+    rule();
+    text("What raised the risk most",22,{wt:700,gap:12});
+    if(!last.factors.length)text("No specific warning signs were recorded.",16,{color:C.muted});
+    last.factors.slice(0,10).forEach(function(f){text("+"+f.w+"   "+f.l,16,{wt:500,gap:2});text(f.a,13,{color:C.muted,gap:12})});
+    if(last.fine.length){y+=6;text("What looked fine",22,{wt:700,gap:12});last.fine.forEach(function(s){text("•  "+s,16,{gap:6})})}
+    var w=$("why").value.trim();
+    if(w){y+=10;rule();text("In the reporter's own words",22,{wt:700,gap:12});text(w.slice(0,1500),16,{gap:12})}
+    if(evidence.length){y+=10;rule();text("Evidence files held by the reporter",22,{wt:700,gap:12});evidence.forEach(function(e){text("•  "+e.file.name+" ("+fsize(e.file.size)+")",16,{gap:6})})}
+    y+=10;rule();
+    text("How to read this report: it was produced by fixed, rule-based checks on information the reporter entered. It is a risk estimate, not proof and not a finding of guilt. It was generated on the reporter's device and nothing was uploaded.",13,{color:C.muted,gap:0});
+    return y+40;
+  }
+  var H=paint(document.createElement("canvas").getContext("2d"),true);
+  var cv=document.createElement("canvas");cv.width=W*S;cv.height=H*S;
+  var ctx=cv.getContext("2d");ctx.scale(S,S);paint(ctx,false);
+  return {canvas:cv,W:W,H:H};
+}
+function dlMsg(t){$("dlMsg").textContent=t}
+function saveFile(blob,name){
+  var plain=function(){try{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();dlMsg("Saved as "+name+". Look in your downloads, then attach it wherever you choose.")}catch(e){dlMsg("This browser blocked the download. Take a screenshot of the report instead.")}};
+  if(window.claude&&window.claude.use){
+    dlMsg("Preparing your file...");
+    window.claude.use("downloads").then(function(d){
+      if(!d){plain();return}
+      d.save({filename:name,data:blob}).then(function(){dlMsg("Saved as "+name+". Attach it wherever you choose.")},function(e){dlMsg(e&&e.code==="declined"?"Download cancelled.":"The file could not be saved here. Take a screenshot of the report instead.")});
+    },plain);
+  }else plain();
+}
+function reportName(ext){return "parakh-report-"+(last.handle||"profile").replace(/[^a-z0-9_+-]+/gi,"_").slice(0,40)+"."+ext}
+$("dlPng").addEventListener("click",function(){
+  try{drawReport().canvas.toBlob(function(b){if(b)saveFile(b,reportName("png"));else dlMsg("The image could not be created on this device.")},"image/png")}
+  catch(e){dlMsg("The image could not be created on this device.")}
+});
+$("dlPdf").addEventListener("click",function(){
+  if(!window.jspdf){dlMsg("The PDF tool did not load. Use Download as image instead.");return}
+  try{var r=drawReport(),doc=new window.jspdf.jsPDF({unit:"px",format:[r.W,r.H],orientation:r.H>=r.W?"portrait":"landscape",hotfixes:["px_scaling"]});
+    doc.addImage(r.canvas.toDataURL("image/jpeg",.9),"JPEG",0,0,r.W,r.H);saveFile(doc.output("blob"),reportName("pdf"))}
+  catch(e){dlMsg("The PDF could not be created on this device. Use Download as image instead.")}
+});
+
+function runCheck(){
+  var p=$("platform").value,h=cleanHandle($("handle").value);
+  if(!h){render();$("handle").focus();return}
+  var k=keyOf(p,h);
+  if(k!==EXKEY&&store.seen.indexOf(k)<0&&avail()>0){
+    if(store.freeUsed<FREE)store.freeUsed++;else store.credits--;
+    store.seen.push(k);save();
+  }
+  render();$("verdict").scrollIntoView({block:"start"});
+}
+$("run").addEventListener("click",runCheck);
+$("run2").addEventListener("click",runCheck);
+$("unlock").addEventListener("click",function(){
+  var v=$("utr").value.trim();
+  if(!/^\d{12}$/.test(v)){$("payMsg").textContent="Enter the 12-digit UPI reference number shown in your payment app.";return}
+  if(store.utr.indexOf(v)>=0){$("payMsg").textContent="That reference number was already used. Enter the one from your latest payment.";return}
+  store.utr.push(v);store.credits+=PACK;save();$("utr").value="";$("payMsg").textContent="";runCheck();
+});
+$("cpUpi").addEventListener("click",function(){
+  try{navigator.clipboard.writeText(UPI).then(function(){$("payMsg").textContent="UPI ID copied."},function(){$("payMsg").textContent="Copy was blocked. Type the UPI ID shown above."})}
+  catch(e){$("payMsg").textContent="Copy was blocked. Type the UPI ID shown above."}
+});
+try{new QRCode($("qr"),{text:"upi://pay?pa="+encodeURIComponent(UPI)+"&pn=Parakh&am="+PRICE+".00&cu=INR&tn="+encodeURIComponent("Parakh checks"),width:168,height:168,correctLevel:QRCode.CorrectLevel.M})}
+catch(e){$("qr").textContent="QR code could not load. Pay to the UPI ID shown."}
+$("clear").addEventListener("click",function(){load(EMPTY);$("exnote").hidden=true;render();$("handle").focus()});
+document.addEventListener("input",render);
+document.addEventListener("change",render);
+
+load(EXAMPLE);render();
+})();
+</script>
+</body>
+</html>
