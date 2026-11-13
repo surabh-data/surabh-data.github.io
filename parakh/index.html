@@ -284,10 +284,16 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
 </section>
 
 <section class="card" id="dash" hidden>
-  <h2>Risk report</h2>
-  <div id="dashBody" style="display:flex;flex-direction:column;gap:14px"></div>
-  <div class="btns"><button type="button" class="primary" id="dlPdf">Download report (PDF)</button><button type="button" id="dlPng">Download as image</button></div>
-  <p class="small muted" id="dlMsg" aria-live="polite">The file is made on this device and sent nowhere. Attach it wherever you choose, with your own screenshots.</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <h2>Risk report</h2>
+    <button type="button" class="primary" id="dashToggle" aria-expanded="false" aria-controls="dashInner">Open risk report</button>
+  </div>
+  <p class="small muted" id="dashHint">See which checks raised the risk, then download the report to send.</p>
+  <div id="dashInner" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div id="dashBody" style="display:flex;flex-direction:column;gap:14px"></div>
+    <div class="btns"><button type="button" class="primary" id="dlPdf">Download report (PDF)</button><button type="button" id="dlPng">Download as image</button></div>
+    <p class="small muted" id="dlMsg" aria-live="polite">The file is made on this device and sent nowhere. Attach it wherever you choose, with your own screenshots.</p>
+  </div>
 </section>
 
 <section class="card who">
@@ -897,6 +903,12 @@ function drawReport(){
   var ctx=cv.getContext("2d");ctx.scale(S,S);paint(ctx,false);
   return {canvas:cv,W:W,H:H};
 }
+$("dashToggle").addEventListener("click",function(){
+  var open=$("dashInner").hidden;
+  $("dashInner").hidden=!open;$("dashHint").hidden=open;
+  this.textContent=open?"Close report":"Open risk report";this.setAttribute("aria-expanded",open?"true":"false");
+  this.className=open?"":"primary";updMore();
+});
 function dlMsg(t){$("dlMsg").textContent=t}
 function saveFile(blob,name){
   var plain=function(){try{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();dlMsg("Saved as "+name+". Look in your downloads, then attach it wherever you choose.")}catch(e){dlMsg("This browser blocked the download. Take a screenshot of the report instead.")}};
