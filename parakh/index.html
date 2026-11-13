@@ -124,9 +124,13 @@ mark{background:var(--bad-bg);color:var(--bad);border-radius:3px;padding:0 2px}
 .who select{padding:13px 12px;border-width:2px;font-size:16px}
 .who input[type=text]{font-family:var(--mono);font-size:17px;padding:13px 14px;border-width:2px}
 .view{display:flex;flex-direction:column;gap:20px}
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.tabs a{padding:10px 14px;font-weight:600;text-decoration:none;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
-.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tabs a{display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;border:2px solid;font-weight:600;line-height:1.25;text-decoration:none}
+.tabs svg{width:24px;height:24px;flex:none}
+#tab-check{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+#tab-learn{border-color:var(--good);color:var(--good);background:var(--good-bg)}
+#tab-check[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+#tab-learn[aria-current="page"]{background:var(--good);color:var(--bg)}
 .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:560px){.lgrid{grid-template-columns:1fr}}
 .lcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
@@ -226,8 +230,8 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
 </header>
 
 <nav class="tabs" aria-label="Sections">
-  <a href="#check" id="tab-check">Check a profile</a>
-  <a href="#learn" id="tab-learn">Learn to spot scams</a>
+  <a href="#check" id="tab-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Check a profile</a>
+  <a href="#learn" id="tab-learn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5zM12 6v13"/></svg>Learn to spot scams</a>
 </nav>
 
 <div class="view" id="view-check">
