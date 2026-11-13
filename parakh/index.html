@@ -98,6 +98,10 @@ mark{background:var(--bad-bg);color:var(--bad);border-radius:3px;padding:0 2px}
 .msg{font-size:14px;background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere}
 .locked{opacity:.75}
 [hidden]{display:none!important}
+.stars{display:flex;gap:4px}
+.stars button{border:0;background:none;padding:4px;border-radius:8px;line-height:0}
+.stars svg{width:44px;height:44px;fill:none;stroke:#e0a106;stroke-width:1.6;stroke-linejoin:round}
+.stars button[aria-pressed="true"] svg{fill:#f2b90f}
 .tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tile{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:2px}
 .tile b{font-family:var(--mono);font-size:26px;font-weight:500;line-height:1.1;font-variant-numeric:tabular-nums}
@@ -469,6 +473,18 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
   </section>
 </div>
 
+<section class="card" id="feedback">
+  <h2>How did Parakh work for you?</h2>
+  <p class="small muted">Parakh is in beta. Your rating tells us what to fix first.</p>
+  <div class="stars" id="stars" role="group" aria-label="Rate Parakh from 1 to 5 stars"></div>
+  <p class="small" id="starLabel" aria-live="polite">Tap a star to rate.</p>
+  <label class="f" for="fbText">What worked, what broke, or what is missing? (optional)
+    <textarea id="fbText" style="min-height:90px;font-family:var(--body);font-size:15px" placeholder="For example: the screenshot reader missed two lines"></textarea>
+  </label>
+  <div class="btns"><a class="btn" id="fbSend" href="#" style="padding:9px 14px">Send feedback</a><button type="button" id="fbCopy">Copy feedback</button></div>
+  <p class="small muted" id="fbMsg" aria-live="polite">Send opens your own email app with the rating filled in. Your chat, files and the profile you checked are never included.</p>
+</section>
+
 <footer>
   <strong>What this check cannot tell you</strong>
   <span>It cannot see reports held privately by Instagram, WhatsApp, Telegram or any platform, so no result means "no scam reported anywhere".</span>
@@ -516,8 +532,8 @@ var EMPTY={platform:"Instagram",handle:"",chat:"",ans:{age:3,photo:2,mutual:2,vi
 
 /* ---------- free uses and payment ---------- */
 var FREE=3,PACK=10,PRICE=49,UPI="8193835370@ybl";
-var store={freeUsed:0,credits:0,seen:[],utr:[],country:""};
-try{var sv=JSON.parse(localStorage.getItem("parakh.v1"));if(sv&&typeof sv==="object"){["freeUsed","credits","seen","utr","country"].forEach(function(k){if(sv[k]!=null)store[k]=sv[k]})}}catch(e){}
+var store={freeUsed:0,credits:0,seen:[],utr:[],country:"",rating:0};
+try{var sv=JSON.parse(localStorage.getItem("parakh.v1"));if(sv&&typeof sv==="object"){["freeUsed","credits","seen","utr","country","rating"].forEach(function(k){if(sv[k]!=null)store[k]=sv[k]})}}catch(e){}
 function save(){try{localStorage.setItem("parakh.v1",JSON.stringify(store))}catch(e){}}
 function keyOf(p,h){return p+"|"+h.toLowerCase()}
 var EXKEY=keyOf(EXAMPLE.platform,EXAMPLE.handle);
@@ -935,6 +951,24 @@ $("dlPdf").addEventListener("click",function(){
     doc.addImage(r.canvas.toDataURL("image/jpeg",.9),"JPEG",0,0,r.W,r.H);saveFile(doc.output("blob"),reportName("pdf"))}
   catch(e){dlMsg("The PDF could not be created on this device. Use Download as image instead.")}
 });
+
+/* ---------- feedback: 5 stars, sent from the visitor's own email app ---------- */
+var FB_TO=["surabhdata","gmail.com"].join("@"),STAR_WORDS=["","1 star: it did not help","2 stars: it needs a lot of work","3 stars: it was okay","4 stars: it helped","5 stars: it helped a lot"];
+function fbBody(){var t=$("fbText").value.trim();return "Parakh feedback\nRating: "+(store.rating?store.rating+" out of 5":"not given")+(t?"\n\nComment:\n"+t:"")+"\n\nSent from the Parakh beta page."}
+function renderStars(){
+  var h="";for(var i=1;i<=5;i++)h+='<button type="button" data-star="'+i+'" aria-label="'+i+(i>1?" stars":" star")+'" aria-pressed="'+(i<=store.rating?"true":"false")+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 17l-5.4 3 1.1-6.1L3.2 9.6l6.1-.8z"/></svg></button>';
+  $("stars").innerHTML=h;$("starLabel").textContent=store.rating?STAR_WORDS[store.rating]+". Tap another star to change it.":"Tap a star to rate.";
+  $("fbSend").href="mailto:"+FB_TO+"?subject="+encodeURIComponent("Parakh feedback: "+(store.rating||"no")+" stars")+"&body="+encodeURIComponent(fbBody());
+}
+$("stars").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;store.rating=+b.dataset.star;save();renderStars();var n=$("stars").querySelector('[data-star="'+store.rating+'"]');if(n)n.focus()});
+$("fbText").addEventListener("input",renderStars);
+$("fbSend").addEventListener("click",function(e){if(!store.rating){e.preventDefault();$("fbMsg").textContent="Tap a star first, then send."}else{$("fbMsg").textContent="Your email app should open with the feedback ready. Press send there. If nothing opened, use Copy feedback."}});
+$("fbCopy").addEventListener("click",function(){
+  if(!store.rating){$("fbMsg").textContent="Tap a star first, then copy.";return}
+  var ok=function(){$("fbMsg").textContent="Feedback copied. Paste it into an email or message to the Parakh team."},no=function(){$("fbMsg").textContent="Copy was blocked on this device. Use Send feedback instead."};
+  try{navigator.clipboard.writeText(fbBody()).then(ok,no)}catch(x){no()}
+});
+renderStars();
 
 function runCheck(){
   var p=$("platform").value,h=cleanHandle($("handle").value);
