@@ -553,6 +553,41 @@ h3 {
   margin-bottom: 16px;
 }
 
+.trust-graphic {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 22px;
+}
+
+.trust-graphic span {
+  position: relative;
+  height: 14px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.trust-graphic span::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 28%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #7fd0c9, var(--green));
+}
+
+.trust-graphic span:nth-child(2)::after {
+  width: 56%;
+  background: linear-gradient(90deg, #ffd28c, var(--amber));
+}
+
+.trust-graphic span:nth-child(3)::after {
+  width: 90%;
+  background: linear-gradient(90deg, #f0a59d, #c0473f);
+}
+
 .ai-graphic {
   display: grid;
   place-items: center;
