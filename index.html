@@ -124,111 +124,23 @@
       <section class="section" id="work" aria-labelledby="work-title">
         <div class="section-heading reveal">
           <p class="eyebrow">Selected Work</p>
-          <h2 id="work-title">Public proof points behind the profile.</h2>
+          <h2 id="work-title">Proof points behind the profile.</h2>
         </div>
 
-        <div class="work-grid">
-          <article class="work-card reveal">
-            <div class="card-graphic ai-graphic" aria-hidden="true">
-              <span></span><span></span><span></span><span></span>
-            </div>
-            <p class="project-kicker">AI + Procurement</p>
-            <h3>ProcureGo</h3>
-            <p>AI procurement copilot for RFQs, supplier comparison, bid support, and auditable review.</p>
-            <div class="card-actions">
-              <a href="https://www.linkedin.com/posts/surabh-csu_week-3-completed-at-weston-ideation-lab-at-share-7473812387595460608-u2B2/" target="_blank" rel="noopener noreferrer">
-                LinkedIn post
-              </a>
-            </div>
-          </article>
-
-          <article class="work-card reveal">
-            <div class="card-graphic sheet-graphic" aria-hidden="true">
-              <span></span><span></span><span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <p class="project-kicker">Excel + Tableau</p>
-            <h3>Analytics + Public Dashboards</h3>
-            <p>
-              Tableau and Excel work across sales, health, sports-budget, and cricket analysis themes,
-              built to explain the decision behind the number.
-            </p>
-            <div class="card-actions">
-              <a href="https://public.tableau.com/app/profile/surabh.saxena" target="_blank" rel="noopener noreferrer">
-                Tableau Public
-              </a>
-            </div>
-          </article>
-
-          <article class="work-card reveal">
-            <div class="card-graphic ops-graphic" aria-hidden="true">
-              <span></span><span></span><span></span><span></span>
-            </div>
-            <p class="project-kicker">Engineering + Operations</p>
-            <h3>Cleanroom & HVAC Systems</h3>
-            <p>
-              Heat-load calculations, BOQs, technical and compliance data sheets, vendor coordination,
-              and client communication for turnkey cleanroom projects.
-            </p>
-          </article>
-
-          <article class="work-card reveal">
-            <div class="card-graphic weather-graphic" aria-hidden="true">
-              <span class="weather-sun"></span>
-              <span class="weather-cloud"></span>
-              <span class="weather-rain one"></span>
-              <span class="weather-rain two"></span>
-              <span class="weather-line"></span>
-            </div>
-            <p class="project-kicker">JavaScript + Weather API</p>
-            <h3>Live Weather Studio</h3>
-            <p>
-              Animated weather dashboard with city search, Open-Meteo live data, comfort notes,
-              forecast cards, unit switching, and responsive graphics.
-            </p>
-            <div class="card-actions">
-              <a href="https://surabh-data.github.io/live-weather-studio/" target="_blank" rel="noopener noreferrer">
-                Live App
-              </a>
-              <a href="https://github.com/surabh-data/live-weather-studio" target="_blank" rel="noopener noreferrer">
-                GitHub Repo
-              </a>
-            </div>
-          </article>
-
-          <article class="work-card reveal">
-            <div class="card-graphic trust-graphic" aria-hidden="true">
-              <span></span><span></span><span></span>
-            </div>
-            <p class="project-kicker">JavaScript + Online Safety</p>
-            <h3>Parakh</h3>
-            <p>
-              Scam-check tool for social media contacts. Scores identity signals, reported history,
-              and conversation behaviour, reads screenshots on the device, and builds a risk report
-              for platforms and cyber cells.
-            </p>
-            <div class="card-actions">
-              <a href="https://surabh-data.github.io/parakh/" target="_blank" rel="noopener noreferrer">
-                Live App
-              </a>
-            </div>
-          </article>
+        <div class="work-lock reveal" data-work-lock>
+          <h3>Projects are shared by access code</h3>
+          <p>Enter the code you received from Surabh to view the project work. No code yet?
+            <a href="#contact">Request one</a>.</p>
+          <form class="work-lock-form" data-work-form>
+            <label class="visually-hidden" for="work-code">Access code</label>
+            <input id="work-code" type="password" autocomplete="off" placeholder="Access code" required data-work-code />
+            <button class="button primary" type="submit" data-work-submit>Unlock</button>
+          </form>
+          <p class="work-lock-status" role="status" aria-live="polite" data-work-status></p>
+          <noscript><p>JavaScript is needed to unlock this section.</p></noscript>
         </div>
-
-        <div class="work-links reveal">
-          <a class="button primary" href="https://github.com/surabh-data" target="_blank" rel="noopener noreferrer">
-            GitHub Profile
-          </a>
-          <a class="button secondary" href="https://surabh-data.github.io/live-weather-studio/" target="_blank" rel="noopener noreferrer">
-            Live Weather Studio
-          </a>
-          <a class="button secondary" href="https://public.tableau.com/app/profile/surabh.saxena" target="_blank" rel="noopener noreferrer">
-            Tableau Public
-          </a>
-          <a class="button secondary" href="https://www.hackerrank.com/surabhdata" target="_blank" rel="noopener noreferrer">
-            HackerRank
-          </a>
-        </div>
+        <div data-work-content hidden></div>
+        <script type="application/json" id="work-locked">{"v":1,"iter":600000,"salt":"IKPb/sUevpQW1ESKfBwZFQ==","iv":"I11jwM8vJ/802ea7","data":"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"}</script>
       </section>
 
       <section class="section credentials-section" id="credentials" aria-labelledby="credentials-title">

@@ -49,3 +49,16 @@ For a personal GitHub Pages site, create a repository named `your-username.githu
 - Replace the `assets/surabh-*.jpg` files to update the profile photos.
 - Edit the project cards in `index.html` to add GitHub links or live project URLs.
 - Edit the education cards in `education.html` when education details or source links change.
+
+## Work Section Access Code
+
+The Work section on `index.html` is stored encrypted (AES-256-GCM, key derived with PBKDF2-SHA256)
+and is unlocked in the browser with an access code. The readable project cards are not in this repo.
+
+To change the code or edit the project cards, keep the readable `work-section.html` outside the repo and run:
+
+```
+WORK_CODE='your-code' node tools/lock-work.mjs path/to/work-section.html
+```
+
+Then commit the updated `index.html`. Never commit the code or the readable file.
