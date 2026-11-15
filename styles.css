@@ -645,6 +645,30 @@ h3 {
   background: rgba(189, 127, 34, 0.82);
 }
 
+.chair-graphic {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 7px;
+  padding: 22px 18px;
+}
+
+.chair-graphic span {
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.chair-graphic span.booked {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.chair-graphic span.you {
+  border-color: transparent;
+  background: var(--amber);
+  animation: cellGlow 2.4s ease-in-out infinite;
+}
+
 .ops-graphic {
   display: flex;
   align-items: end;
