@@ -52,10 +52,11 @@ For a personal GitHub Pages site, create a repository named `your-username.githu
 
 ## Work Section Access Code
 
-The Work section on `index.html` is stored encrypted (AES-256-GCM, key derived with PBKDF2-SHA256)
-and is unlocked in the browser with an access code. The readable project cards are not in this repo.
+The project cards on `index.html` are public, but every link in the Work section is locked. The real
+link addresses are stored encrypted (AES-256-GCM, key derived with PBKDF2-SHA256) and open in the
+browser only after the visitor enters the access code.
 
-To change the code or edit the project cards, keep the readable `work-section.html` outside the repo and run:
+To change the code, the cards or the links, keep the readable `work-section.html` outside the repo and run:
 
 ```
 WORK_CODE='your-code' node tools/lock-work.mjs path/to/work-section.html

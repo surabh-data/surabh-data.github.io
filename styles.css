@@ -1957,13 +1957,33 @@ h3 {
   white-space: nowrap;
 }
 
+.lock-icon {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  margin-right: 6px;
+  flex: none;
+  fill: currentColor;
+  opacity: 0.7;
+  vertical-align: -1px;
+}
+
+.is-unlocked .lock-icon {
+  display: none;
+}
+
 .work-lock {
-  max-width: 560px;
+  width: min(440px, calc(100vw - 32px));
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
+  color: var(--ink);
   padding: 24px;
   box-shadow: var(--shadow);
+}
+
+.work-lock::backdrop {
+  background: rgba(12, 37, 59, 0.55);
 }
 
 .work-lock h3 {
@@ -1980,14 +2000,8 @@ h3 {
   font-weight: 700;
 }
 
-.work-lock-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.work-lock-form input {
-  flex: 1 1 200px;
+.work-lock input {
+  width: 100%;
   min-height: 46px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1997,28 +2011,38 @@ h3 {
   background: #ffffff;
 }
 
-.work-lock-form input:focus-visible {
+.work-lock input:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 1px;
 }
 
-.work-lock-form .button {
-  cursor: pointer;
-  background: var(--blue);
-}
-
-.work-lock-form .button:disabled {
-  opacity: 0.6;
-  cursor: progress;
-}
-
 .work-lock-status {
   min-height: 1.4em;
-  margin: 12px 0 0;
+  margin: 10px 0 12px;
   font-size: 14px;
 }
 
-[data-work-content][hidden],
-.work-lock[hidden] {
-  display: none;
+.work-lock-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.work-lock-actions .button {
+  cursor: pointer;
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.work-lock-actions .button.primary {
+  border-color: transparent;
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.work-lock-actions .button:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }

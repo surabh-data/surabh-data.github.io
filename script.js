@@ -55,19 +55,22 @@ if ("IntersectionObserver" in window) {
   revealItems.forEach((item) => item.classList.add("is-visible"));
 }
 
-// Work section: content is AES-GCM encrypted in index.html and unlocked with an access code.
+// Work section: project cards are public, but link addresses are AES-GCM encrypted
+// in index.html and only open after the visitor enters the access code.
 (function workLock() {
   const store = document.getElementById("work-locked");
-  const lock = document.querySelector("[data-work-lock]");
-  const target = document.querySelector("[data-work-content]");
+  const dialog = document.querySelector("[data-work-dialog]");
   const form = document.querySelector("[data-work-form]");
-  if (!store || !lock || !target || !form) return;
+  const links = document.querySelectorAll("[data-locked-link]");
+  if (!store || !dialog || !form || !links.length) return;
 
   const input = form.querySelector("[data-work-code]");
   const submit = form.querySelector("[data-work-submit]");
-  const status = lock.querySelector("[data-work-status]");
+  const cancel = form.querySelector("[data-work-cancel]");
+  const status = form.querySelector("[data-work-status]");
   const KEY = "work-access-code";
   const bytes = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+  let pending = null;
 
   function remembered() {
     try { return sessionStorage.getItem(KEY); } catch (e) { return null; }
@@ -87,22 +90,35 @@ if ("IntersectionObserver" in window) {
       base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
     );
     const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes(box.iv) }, key, bytes(box.data));
-    return new TextDecoder().decode(plain);
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+
+  function openLinks(urls) {
+    links.forEach((link) => {
+      const url = urls[Number(link.dataset.lockedLink)];
+      if (!url) return;
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.removeAttribute("data-locked-link");
+      link.classList.add("is-unlocked");
+    });
   }
 
   async function unlock(code, quiet) {
     if (!window.crypto || !crypto.subtle) {
-      status.textContent = "This browser cannot unlock the section. Please open the site over https in a current browser.";
+      status.textContent = "This browser cannot unlock the links. Please use a current browser over https.";
       return;
     }
     submit.disabled = true;
     if (!quiet) status.textContent = "Checking code...";
     try {
-      target.innerHTML = await decrypt(code);
-      target.querySelectorAll(".reveal").forEach((item) => item.classList.add("is-visible"));
-      target.hidden = false;
-      lock.hidden = true;
+      const urls = await decrypt(code);
+      const go = pending ? urls[Number(pending.dataset.lockedLink)] : null;
+      openLinks(urls);
       remember(code);
+      if (dialog.open) dialog.close();
+      if (go) window.location.href = go;
     } catch (e) {
       forget();
       if (!quiet) {
@@ -113,6 +129,24 @@ if ("IntersectionObserver" in window) {
       submit.disabled = false;
     }
   }
+
+  links.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (!link.hasAttribute("data-locked-link")) return;
+      event.preventDefault();
+      pending = link;
+      status.textContent = "";
+      input.value = "";
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      input.focus();
+    });
+  });
+
+  cancel.addEventListener("click", () => {
+    pending = null;
+    dialog.close();
+  });
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
