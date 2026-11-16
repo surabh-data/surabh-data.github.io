@@ -128,7 +128,16 @@ mark{background:var(--bad-bg);color:var(--bad);border-radius:3px;padding:0 2px}
 .who select{padding:13px 12px;border-width:2px;font-size:16px}
 .who input[type=text]{font-family:var(--mono);font-size:17px;padding:13px 14px;border-width:2px}
 .view{display:flex;flex-direction:column;gap:20px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:560px){.tabs{gap:8px}.tabs a{flex-direction:column;justify-content:center;text-align:center;gap:6px;padding:10px 6px;font-size:13px}}
+#tab-alerts{border-color:var(--warn);color:var(--warn);background:var(--warn-bg)}
+#tab-alerts[aria-current="page"]{background:var(--warn);color:var(--bg)}
+.alist{display:flex;flex-direction:column;gap:12px}
+.acard{gap:10px}
+.ahead{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lab.warn{background:var(--warn-bg);color:var(--warn)}
+.ameta{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.asrc{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px;border-top:1px solid var(--line);padding-top:8px}
 .tabs a{display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;border:2px solid;font-weight:600;line-height:1.25;text-decoration:none}
 .tabs svg{width:24px;height:24px;flex:none}
 #tab-check{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
@@ -236,6 +245,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
 <nav class="tabs" aria-label="Sections">
   <a href="#check" id="tab-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Check a profile</a>
   <a href="#learn" id="tab-learn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5zM12 6v13"/></svg>Learn to spot scams</a>
+  <a href="#alerts" id="tab-alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15zM10 21h4"/></svg>Scam alerts</a>
 </nav>
 
 <div class="view" id="view-check">
@@ -470,6 +480,28 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
       <a href="https://takeitdown.ncmec.org/" target="_blank" rel="noopener">NCMEC Take It Down</a>
       <a href="https://cybercrime.gov.in/" target="_blank" rel="noopener">National Cyber Crime Reporting Portal, India</a>
     </div>
+  </section>
+</div>
+
+<div class="view" id="view-alerts" hidden>
+  <section class="card">
+    <h2>Scam alerts: India</h2>
+    <p class="small">Scams that police and government agencies in India have warned about. Each card shows what it looks like and what to do.</p>
+    <p class="note">Reading these does not mean you are in danger. Knowing the pattern is what protects you.</p>
+    <p class="ameta" id="alertsUpdated"></p>
+  </section>
+
+  <div class="alist" id="alerts"></div>
+
+  <section class="card">
+    <h2>If it happened to you</h2>
+    <div class="lcard" style="border:0;padding:0">
+      <span>Money lost: call <a href="tel:1930">1930</a> straight away. Reporting early can help freeze the money.</span>
+      <span>Any cybercrime: <a href="https://cybercrime.gov.in/" target="_blank" rel="noopener">cybercrime.gov.in</a></span>
+      <span>Scam attempt, no money lost: <a href="https://sancharsaathi.gov.in/sfc" target="_blank" rel="noopener">Chakshu on Sanchar Saathi</a></span>
+      <span>Not sure about the account that contacted you? <a href="#check">Check the profile</a>.</span>
+    </div>
+    <p class="small muted">Alerts are short summaries written by Parakh. Open the source on each card for the full report. No victims are named.</p>
   </section>
 </div>
 
@@ -867,15 +899,64 @@ function renderQuiz(){
   $("quizScore").textContent=n===QZ.length?"You got "+ok+" of "+QZ.length+". The pattern to remember: links to log in, codes, deadlines and payments.":n?n+" of "+QZ.length+" answered.":"";
 }
 $("quiz").addEventListener("click",function(e){var b=e.target.closest("button");if(!b||b.dataset.q==null)return;qzAns[+b.dataset.q]=b.dataset.a==="1";renderQuiz()});
+/* ---------- scam alerts ----------
+   To add an alert: copy one {...} block to the top of ALERTS, edit it, and change ALERTS_UPDATED.
+   Write the summary in your own words, link the source, and never name a victim or an accused person.
+   Keep the newest alert first. Remove alerts older than about six months unless they are marked Ongoing. */
+var ALERTS_UPDATED="17 Nov 2026";
+var ALERTS=[
+ {type:"Fake helpline",when:"14 Nov 2026",by:"I4C, Ministry of Home Affairs",
+  title:"Fake customer-care numbers in search results",
+  what:"You search online for a company's helpline to get a refund or report a missing item. The number you find belongs to a scammer who poses as support staff and asks you to install a screen-sharing app such as AnyDesk or TeamViewer. Once they can see your screen, they can reach your banking and payment apps.",
+  flags:["The number came from a search result or a map listing, not from the company's own app or website.","\"Support\" says you must install an app or share your screen to get your refund."],
+  todo:"Take helpline numbers only from the company's official app or website. Never install an app because a caller asks you to. Never share an OTP or UPI PIN.",
+  src:[["ETV Bharat, 14 Nov 2026","https://www.etvbharat.com/en/bharat/fake-customer-care-numbers-how-cyber-fraudsters-are-targeting-consumers-searching-for-refunds-on-google-enn26111403277"]]},
+ {type:"Account takeover",when:"22 Oct 2026",by:"Rajasthan Police cyber crime wing",
+  title:"WhatsApp accounts taken over through a linked device",
+  what:"Scammers get your WhatsApp linked to their own device with a fake QR code or link, or talk you into sharing a verification code. Then they message your contacts as you and ask for urgent money.",
+  flags:["A QR code or link arrives with a message you did not expect.","Anyone asks for a code sent to your phone, even a \"friend\" or \"support\".","A contact suddenly asks for money for an emergency."],
+  todo:"Turn on two-step verification with a strong PIN. In WhatsApp, open Linked devices and log out any device you do not recognise. If a friend asks for money in a chat, call them before you send anything.",
+  check:true,
+  src:[["StudyCafe on the Rajasthan Police advisory, 22 Oct 2026","https://studycafe.in/rajasthan-police-warns-of-whatsapp-account-hacking-scams-urges-people-to-beware-of-fake-qr-codes-and-otp-fraud-427530.html"],["Free Press Journal on the CERT-In advisory","https://www.freepressjournal.in/tech/indian-govt-warns-whatsapp-users-of-serious-security-threat-hackers-may-access-messages-photos-and-videos"]]},
+ {type:"Malicious app",when:"26 Sep 2026",by:"Keralam Police",
+  title:"Fake traffic e-challan that makes you install an app",
+  what:"An SMS or WhatsApp message says you have an unpaid traffic fine. The link opens a copy of the e-challan website, asks for your vehicle number and then tells you to download an app. That APK file can give a fraudster control of your phone.",
+  flags:["The message comes from a private mobile number.","You are told to install an app or APK file to view or clear a fine.","Prompts such as \"Pending Verification\" or \"Install App to Clear Challan\"."],
+  todo:"Do not open the link. Type the official Parivahan e-Challan address yourself and check there. If you already installed the file, disconnect the phone from the internet, check your bank and UPI accounts for payments you did not make, and change your passwords from another device.",
+  src:[["ThePrint (PTI), 26 Sep 2026","https://theprint.in/india/keralam-police-warn-of-malicious-apk-scam-via-fake-e-challan-sms/3053993/"],["Business Standard on the PIB Fact Check warning","https://www.business-standard.com/india-news/fake-traffic-challan-scam-pib-warning-whatsapp-sms-links-126071000400_1.html"]]},
+ {type:"AI voice clone",when:"Feb 2026",by:"McAfee State of the Scamiverse 2026",
+  title:"A familiar voice asks for urgent money",
+  what:"A call or voice note sounds like a relative, a bank officer or an official and asks for money straight away. Scammers can copy a voice from short clips posted online. In McAfee's 2026 survey, one in five people said they had faced a voice-cloning scam.",
+  flags:["An urgent request for money from a number you do not know.","They cannot stay on the call or switch to video.","You are asked to keep it secret."],
+  todo:"Hang up and call the person back on the number you already have. Agree a family code word that only your family knows.",
+  src:[["Voice&Data on the McAfee report, 6 Feb 2026","https://www.voicendata.com/research/mcafee-report-highlights-growing-digital-scams-in-india-11081240"]]},
+ {type:"Fake officials",when:"Ongoing",by:"RBI and I4C",
+  title:"\"Digital arrest\" video calls",
+  what:"A caller posing as police, CBI or customs says a parcel or your ID is linked to a crime, keeps you on a video call and demands money to settle the case. There is no such thing as a digital arrest in Indian law.",
+  flags:["You are told not to hang up or tell anyone.","An \"officer\" asks for money, bank details or an OTP on a call."],
+  todo:"Hang up. Do not pay and do not share any details. Report the call at 1930 or cybercrime.gov.in.",
+  src:[["Free Press Journal on the RBI alert","https://www.freepressjournal.in/business/rbi-alert-beware-of-fake-digital-arrest-calls-jaankaar-baniye-satark-rahiye"],["ThePrint on the I4C advisory","https://theprint.in/india/cbi-ed-police-dont-arrest-people-through-video-calls-indian-cyber-crime-coordination-centre/2299608"]]}
+];
+function renderAlerts(){
+  $("alertsUpdated").textContent="Last updated "+ALERTS_UPDATED+" · "+ALERTS.length+" alerts";
+  $("alerts").innerHTML=ALERTS.map(function(a){
+    return '<article class="lcard acard"><div class="ahead"><span class="lab warn">'+esc(a.type)+'</span><span class="ameta">'+esc(a.when)+' · '+esc(a.by)+'</span></div>'+
+      '<h3>'+esc(a.title)+'</h3><span>'+esc(a.what)+'</span>'+
+      '<span class="lab bad">Red flags</span><ul class="plain">'+a.flags.map(function(f){return '<li>'+esc(f)+'</li>'}).join("")+'</ul>'+
+      '<span class="lab good">Do this</span><span>'+esc(a.todo)+'</span>'+
+      (a.check?'<span><a href="#check">Check the account that contacted you</a></span>':'')+
+      '<div class="asrc"><span>Source:</span>'+a.src.map(function(s){return '<a href="'+esc(s[1])+'" target="_blank" rel="noopener">'+esc(s[0])+'</a>'}).join("")+'</div></article>'}).join("");
+}
 function route(){
-  var learn=location.hash==="#learn";
-  $("view-check").hidden=learn;$("view-learn").hidden=!learn;
-  $("tab-check")[learn?"removeAttribute":"setAttribute"]("aria-current","page");
-  $("tab-learn")[learn?"setAttribute":"removeAttribute"]("aria-current","page");
+  var h=location.hash,v=h==="#learn"?"learn":h==="#alerts"?"alerts":"check";
+  ["check","learn","alerts"].forEach(function(k){
+    $("view-"+k).hidden=k!==v;
+    $("tab-"+k)[k===v?"setAttribute":"removeAttribute"]("aria-current","page");
+  });
   updMore();
 }
 window.addEventListener("hashchange",route);
-renderLearn();renderQuiz();route();
+renderLearn();renderQuiz();renderAlerts();route();
 
 /* ---------- downloadable report (drawn on this device) ---------- */
 function drawReport(){
