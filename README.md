@@ -63,3 +63,15 @@ WORK_CODE='your-code' node tools/lock-work.mjs path/to/work-section.html
 ```
 
 Then commit the updated `index.html`. Never commit the code or the readable file.
+
+## Locked Project Pages
+
+A whole project page can sit behind the same access code. The page is encrypted (AES-256-GCM, PBKDF2-SHA256),
+so its content and source are not readable in this public repo. Keep the readable app file outside the repo and run:
+
+```
+WORK_CODE='your-code' node tools/lock-page.mjs path/to/app.html barbos "Barbos"
+```
+
+This writes `barbos/index.html`. Visitors who already unlocked the Work links in the same tab are let in without
+typing the code again.
