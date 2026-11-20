@@ -1,0 +1,42 @@
+name: Parakh subscriber count
+
+# Once a day, asks Kit how many people are subscribed and saves the number
+# to parakh/subscribers.json so the Parakh page can show it.
+# The Kit API key stays secret in GitHub (Settings > Secrets > Actions > KIT_API_KEY).
+on:
+  schedule:
+    - cron: "17 1 * * *"   # 06:47 India time
+  workflow_dispatch: {}      # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ask Kit for the subscriber count
+        env:
+          KIT_API_KEY: ${{ secrets.KIT_API_KEY }}
+        run: |
+          if [ -z "$KIT_API_KEY" ]; then
+            echo "KIT_API_KEY secret is not set yet. Skipping."
+            exit 0
+          fi
+          resp=$(curl -sS --fail -H "X-Kit-Api-Key: $KIT_API_KEY" \
+            "https://api.kit.com/v4/subscribers?status=active&per_page=1&include_total_count=true")
+          count=$(echo "$resp" | jq '(.pagination.total_count // .total_count) | tonumber')
+          today=$(TZ=Asia/Kolkata date +"%d %b %Y")
+          printf '{"count": %s, "updated": "%s"}\n' "$count" "$today" > parakh/subscribers.json
+          cat parakh/subscribers.json
+
+      - name: Save the new count
+        run: |
+          git config user.name "parakh-bot"
+          git config user.email "parakh-bot@users.noreply.github.com"
+          git add parakh/subscribers.json
+          git diff --cached --quiet && { echo "No change."; exit 0; }
+          git commit -m "Parakh: update subscriber count"
+          git push
