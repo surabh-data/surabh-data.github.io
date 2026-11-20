@@ -133,6 +133,17 @@ mark{background:var(--bad-bg);color:var(--bad);border-radius:3px;padding:0 2px}
 #tab-alerts{border-color:var(--warn);color:var(--warn);background:var(--warn-bg)}
 #tab-alerts[aria-current="page"]{background:var(--warn);color:var(--bg)}
 .alist{display:flex;flex-direction:column;gap:12px}
+.sublink{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;border:2px dashed var(--accent);color:var(--accent);font-weight:600;font-size:15px;text-decoration:none;background:var(--surface)}
+.sublink svg{width:20px;height:20px;flex:none}
+.sublink[aria-current="page"]{border-style:solid;background:var(--accent);color:var(--accent-ink)}
+.subhero{border-top:4px solid var(--accent)}
+.subform{display:flex;flex-direction:column;gap:12px}
+input[type=email]{font:inherit;font-size:17px;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:8px;padding:13px 14px;width:100%}
+input[type=email]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.subform button.primary{padding:13px 18px;font-size:16px}
+.submsg{font-size:15px;border-radius:8px;padding:12px 14px}
+.submsg.ok{background:var(--good-bg);color:var(--good)}.submsg.no{background:var(--bad-bg);color:var(--bad)}.submsg.wait{background:var(--warn-bg);color:var(--warn)}
+.subcta{background:var(--accent-soft);border-color:transparent}
 .acard{gap:10px}
 .ahead{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .lab.warn{background:var(--warn-bg);color:var(--warn)}
@@ -247,6 +258,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
   <a href="#learn" id="tab-learn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5zM12 6v13"/></svg>Learn to spot scams</a>
   <a href="#alerts" id="tab-alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15zM10 21h4"/></svg>Scam alerts</a>
 </nav>
+<a href="#subscribe" class="sublink" id="tab-subscribe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Get new scam alerts by email</a>
 
 <div class="view" id="view-check">
 <section class="card calm">
@@ -493,6 +505,12 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
 
   <div class="alist" id="alerts"></div>
 
+  <section class="card subcta">
+    <h2>Get these alerts by email</h2>
+    <p class="small">When Parakh adds new scam alerts, we send you a short email: what the scam looks like and what to do. Free, and you can unsubscribe anytime.</p>
+    <div class="btns"><a class="btn primary" href="#subscribe" style="padding:11px 16px">Subscribe with your email</a></div>
+  </section>
+
   <section class="card">
     <h2>If it happened to you</h2>
     <div class="lcard" style="border:0;padding:0">
@@ -502,6 +520,40 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
       <span>Not sure about the account that contacted you? <a href="#check">Check the profile</a>.</span>
     </div>
     <p class="small muted">Alerts are short summaries written by Parakh. Open the source on each card for the full report. No victims are named.</p>
+  </section>
+</div>
+
+<div class="view" id="view-subscribe" hidden>
+  <section class="card subhero">
+    <h2 style="font-size:24px">New scam alerts, straight to your inbox</h2>
+    <p>Scammers change their tricks every few weeks. When Parakh publishes new scam alerts, we email you a short summary: what the scam looks like, the red flags, and what to do. Usually about once a week, and always free.</p>
+    <form class="subform" id="subForm" novalidate>
+      <label class="f" for="subEmail">Your email address
+        <input type="email" id="subEmail" name="email_address" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+      </label>
+      <label class="check" for="subOk"><input type="checkbox" id="subOk" required><span>Yes, send me Parakh scam alert emails. I can unsubscribe anytime.</span></label>
+      <button type="submit" class="primary" id="subBtn">Subscribe</button>
+      <p class="submsg" id="subMsg" aria-live="polite" hidden></p>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>What you will get</h2>
+    <p class="small muted">The kind of alerts we send. These are the latest ones on Parakh:</p>
+    <ul class="plain" id="subSample"></ul>
+    <p class="small"><a href="#alerts">Read all scam alerts</a></p>
+  </section>
+
+  <section class="card">
+    <h2>Your email, your choice</h2>
+    <ul class="plain">
+      <li>We only ask for your email address. Nothing else.</li>
+      <li>You will get one email asking you to confirm. Nothing is sent until you tap the confirm link.</li>
+      <li>Every email has an unsubscribe link at the bottom. One tap and you are off the list.</li>
+      <li>Your email is stored with our email provider, Kit, only to send these alerts. We never sell or share it.</li>
+      <li>Subscribing is separate from checking a profile. Your checks, chats and files still stay on your device.</li>
+    </ul>
+    <p class="note"><b>Stay safe with our emails too.</b> Parakh will never ask you for money, an OTP, a password or to install an app. An email that does is a scam using our name. Do not reply to it.</p>
   </section>
 </div>
 
@@ -948,15 +1000,42 @@ function renderAlerts(){
       '<div class="asrc"><span>Source:</span>'+a.src.map(function(s){return '<a href="'+esc(s[1])+'" target="_blank" rel="noopener">'+esc(s[0])+'</a>'}).join("")+'</div></article>'}).join("");
 }
 function route(){
-  var h=location.hash,v=h==="#learn"?"learn":h==="#alerts"?"alerts":"check";
-  ["check","learn","alerts"].forEach(function(k){
+  var h=location.hash,v=h==="#learn"?"learn":h==="#alerts"?"alerts":h==="#subscribe"?"subscribe":"check";
+  ["check","learn","alerts","subscribe"].forEach(function(k){
     $("view-"+k).hidden=k!==v;
     $("tab-"+k)[k===v?"setAttribute":"removeAttribute"]("aria-current","page");
   });
   updMore();
 }
 window.addEventListener("hashchange",route);
-renderLearn();renderQuiz();renderAlerts();route();
+
+/* ---------- email subscription (Kit) ---------- */
+/* Paste your Kit form ID here, e.g. "1234567". Find it in Kit: Grow > Landing Pages & Forms > your form; the number in the editor URL. */
+var KIT_FORM_ID="";
+function renderSubSample(){
+  $("subSample").innerHTML=ALERTS.slice(0,3).map(function(a){return '<li><b>'+esc(a.type)+':</b> '+esc(a.title)+'</li>'}).join("");
+}
+(function(){
+  var form=$("subForm"),msg=$("subMsg"),btn=$("subBtn");
+  function say(cls,text){msg.className="submsg "+cls;msg.textContent=text;msg.hidden=false}
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var em=$("subEmail").value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){say("no","Please enter a full email address, like name@gmail.com.");$("subEmail").focus();return}
+    if(!$("subOk").checked){say("no","Please tick the box to say you want these emails.");return}
+    if(!KIT_FORM_ID){say("wait","Email sign-ups open very soon. Please check back in a day or two.");return}
+    btn.disabled=true;btn.textContent="Subscribing...";
+    var fd=new FormData();fd.append("email_address",em);
+    fetch("https://app.kit.com/forms/"+KIT_FORM_ID+"/subscriptions",{method:"POST",body:fd,mode:"no-cors"})
+      .then(function(){
+        say("ok","Almost done! We have sent a confirmation email to "+em+". Tap the link in it to start getting alerts. If you do not see it in a few minutes, check Spam or Promotions.");
+        form.reset();
+      })
+      .catch(function(){say("no","We could not reach our email service. Check your internet connection and try again.")})
+      .then(function(){btn.disabled=false;btn.textContent="Subscribe"});
+  });
+})();
+renderLearn();renderQuiz();renderAlerts();renderSubSample();route();
 
 /* ---------- downloadable report (drawn on this device) ---------- */
 function drawReport(){
