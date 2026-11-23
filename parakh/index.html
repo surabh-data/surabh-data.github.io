@@ -959,8 +959,21 @@ $("quiz").addEventListener("click",function(e){var b=e.target.closest("button");
    To add an alert: copy one {...} block to the top of ALERTS, edit it, and change ALERTS_UPDATED.
    Write the summary in your own words, link the source, and never name a victim or an accused person.
    Keep the newest alert first. Remove alerts older than about six months unless they are marked Ongoing. */
-var ALERTS_UPDATED="17 Nov 2026";
+var ALERTS_UPDATED="24 Nov 2026";
 var ALERTS=[
+ {type:"Malicious app",when:"21 Nov 2026",by:"Delhi Police",
+  title:"\"Bank app\" APK sent on WhatsApp for KYC or pension work",
+  what:"A caller poses as a bank officer or service staff and says your KYC, pension life certificate, gas or electricity connection or credit card needs an update. They send an app file (APK) on WhatsApp that you must install to \"finish the process\". The app shows fake bank forms and asks to read your SMS and calls, so the fraudsters see your OTPs and take over your account.",
+  flags:["An app file (ending in .apk) arrives on WhatsApp from someone claiming to be your bank.","You are told to install it to complete KYC, a life certificate or a bill update.","The app asks for access to your SMS, calls or photos."],
+  todo:"Never install an app file sent in a chat, even if the sender says it is from your bank. Get your bank's app only from the Play Store or App Store. If you have lost money, call 1930 at once or report at cybercrime.gov.in.",
+  check:true,
+  src:[["Aaj Tak on the Delhi Police operation, 21 Nov 2026","https://aajtak.in/india/delhi/story/delhi-police-jamtara-cyber-fraud-22-arrested-2080-complaints-apk-scam-ntc-dhrj-rpti-2702347-2026-11-21"],["The Tribune on Panchkula Police advice on APK files","https://www.tribuneindia.com/news/chandigarh/panchkula-police-warn-against-festive-season-online-frauds-issue-advisory"]]},
+ {type:"Pensioner scam",when:"11 Nov 2026",by:"Indore Police case, reported by PTI and Upstox",
+  title:"Fake \"life certificate at home\" ads",
+  what:"A social media ad offers to submit a pensioner's life certificate at their doorstep. It sends a link that asks for bank details, and once they are entered, money is taken from the account straight away.",
+  flags:["An ad on Facebook or another app offers a doorstep life certificate.","A link asks for your bank, card or net-banking details.","The service is not confirmed by your bank or post office."],
+  todo:"Submit your life certificate only at your bank, post office or the official jeevanpramaan.gov.in. For a real doorstep service, ask your nearest post office about India Post Payments Bank. If money is taken, call 1930 at once and tell your bank.",
+  src:[["Upstox (based on PTI), 11 Nov 2026","https://upstox.com/news/personal-finance/latest-updates/life-certificate-at-home-scam-how-a-facebook-ad-duped-an-indore-pensioner-of-rs-2-lakh-5-ways-to-stay-safe/article-203249/"]]},
  {type:"Fake helpline",when:"14 Nov 2026",by:"I4C, Ministry of Home Affairs",
   title:"Fake customer-care numbers in search results",
   what:"You search online for a company's helpline to get a refund or report a missing item. The number you find belongs to a scammer who poses as support staff and asks you to install a screen-sharing app such as AnyDesk or TeamViewer. Once they can see your screen, they can reach your banking and payment apps.",
@@ -980,12 +993,6 @@ var ALERTS=[
   flags:["The message comes from a private mobile number.","You are told to install an app or APK file to view or clear a fine.","Prompts such as \"Pending Verification\" or \"Install App to Clear Challan\"."],
   todo:"Do not open the link. Type the official Parivahan e-Challan address yourself and check there. If you already installed the file, disconnect the phone from the internet, check your bank and UPI accounts for payments you did not make, and change your passwords from another device.",
   src:[["ThePrint (PTI), 26 Sep 2026","https://theprint.in/india/keralam-police-warn-of-malicious-apk-scam-via-fake-e-challan-sms/3053993/"],["Business Standard on the PIB Fact Check warning","https://www.business-standard.com/india-news/fake-traffic-challan-scam-pib-warning-whatsapp-sms-links-126071000400_1.html"]]},
- {type:"AI voice clone",when:"Feb 2026",by:"McAfee State of the Scamiverse 2026",
-  title:"A familiar voice asks for urgent money",
-  what:"A call or voice note sounds like a relative, a bank officer or an official and asks for money straight away. Scammers can copy a voice from short clips posted online. In McAfee's 2026 survey, one in five people said they had faced a voice-cloning scam.",
-  flags:["An urgent request for money from a number you do not know.","They cannot stay on the call or switch to video.","You are asked to keep it secret."],
-  todo:"Hang up and call the person back on the number you already have. Agree a family code word that only your family knows.",
-  src:[["Voice&Data on the McAfee report, 6 Feb 2026","https://www.voicendata.com/research/mcafee-report-highlights-growing-digital-scams-in-india-11081240"]]},
  {type:"Fake officials",when:"Ongoing",by:"RBI and I4C",
   title:"\"Digital arrest\" video calls",
   what:"A caller posing as police, CBI or customs says a parcel or your ID is linked to a crime, keeps you on a video call and demands money to settle the case. There is no such thing as a digital arrest in Indian law.",
