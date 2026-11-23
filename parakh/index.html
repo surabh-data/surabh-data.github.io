@@ -958,7 +958,7 @@ $("quiz").addEventListener("click",function(e){var b=e.target.closest("button");
 /* ---------- scam alerts ----------
    To add an alert: copy one {...} block to the top of ALERTS, edit it, and change ALERTS_UPDATED.
    Write the summary in your own words, link the source, and never name a victim or an accused person.
-   Keep the newest alert first. Remove alerts older than about six months unless they are marked Ongoing. */
+   Keep the newest alert first. Do not remove old alerts. */
 var ALERTS_UPDATED="24 Nov 2026";
 var ALERTS=[
  {type:"Malicious app",when:"21 Nov 2026",by:"Delhi Police",
@@ -993,6 +993,12 @@ var ALERTS=[
   flags:["The message comes from a private mobile number.","You are told to install an app or APK file to view or clear a fine.","Prompts such as \"Pending Verification\" or \"Install App to Clear Challan\"."],
   todo:"Do not open the link. Type the official Parivahan e-Challan address yourself and check there. If you already installed the file, disconnect the phone from the internet, check your bank and UPI accounts for payments you did not make, and change your passwords from another device.",
   src:[["ThePrint (PTI), 26 Sep 2026","https://theprint.in/india/keralam-police-warn-of-malicious-apk-scam-via-fake-e-challan-sms/3053993/"],["Business Standard on the PIB Fact Check warning","https://www.business-standard.com/india-news/fake-traffic-challan-scam-pib-warning-whatsapp-sms-links-126071000400_1.html"]]},
+ {type:"AI voice clone",when:"Feb 2026",by:"McAfee State of the Scamiverse 2026",
+  title:"A familiar voice asks for urgent money",
+  what:"A call or voice note sounds like a relative, a bank officer or an official and asks for money straight away. Scammers can copy a voice from short clips posted online. In McAfee's 2026 survey, one in five people said they had faced a voice-cloning scam.",
+  flags:["An urgent request for money from a number you do not know.","They cannot stay on the call or switch to video.","You are asked to keep it secret."],
+  todo:"Hang up and call the person back on the number you already have. Agree a family code word that only your family knows.",
+  src:[["Voice&Data on the McAfee report, 6 Feb 2026","https://www.voicendata.com/research/mcafee-report-highlights-growing-digital-scams-in-india-11081240"]]},
  {type:"Fake officials",when:"Ongoing",by:"RBI and I4C",
   title:"\"Digital arrest\" video calls",
   what:"A caller posing as police, CBI or customs says a parcel or your ID is linked to a crime, keeps you on a video call and demands money to settle the case. There is no such thing as a digital arrest in Indian law.",
