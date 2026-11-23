@@ -1,373 +1,358 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Study Notebook</title>
-<meta name="theme-color" content="#2350d8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Notebook">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* VOICE: calm, studious, a tool you open every day.
-   IDEA: a ruled exercise notebook — blue lines, red margin, tabbed sections.
-   PICTURE: the open ruled page itself, centre stage, with the note list as tabs beside it.
-   COLOUR and TYPE: paper white, ink, rule blue, margin red as accent; Newsreader titles, Inter body.
-   LAYOUT: list | page | study helper; stacks on narrow screens. */
-:root{color-scheme:light dark;
---bg:light-dark(#eef1f6,#12151c);--paper:light-dark(#ffffff,#1b1f29);--ink:light-dark(#1b1f2a,#e7e9ef);
---mute:light-dark(#5d6576,#9aa2b4);--rule:light-dark(#c9d8f0,#2a3345);--margin:light-dark(#e05a5a,#c65454);
---accent:light-dark(#2350d8,#7d9bff);--line:light-dark(#dde3ee,#2b3140);--chip:light-dark(#e6ecf9,#232a3a)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
-*{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
-h1,h2,h3{font-family:Newsreader,Georgia,serif;font-weight:600;line-height:1.1;margin:0}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:0 14px;min-height:40px}
-button:hover{border-color:var(--accent)}
-button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:18px max(3vw,16px) 6px}
-header h1{font-size:clamp(28px,4vw,38px)}
-.status{font-size:13px;color:var(--mute)}
-.app{display:grid;grid-template-columns:270px minmax(0,1fr) 330px;gap:16px;padding:12px max(3vw,16px) 32px;align-items:start}
-.side,.help{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px}
-.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.tabs button{min-height:34px;padding:0 11px;font-size:14px;border-radius:999px;background:var(--chip);border-color:transparent}
-.tabs button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
-.search{width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--bg);font-size:16px}
-.list{list-style:none;margin:10px 0 0;padding:0;max-height:62vh;overflow:auto}
-.list li button{width:100%;text-align:left;border:0;border-left:3px solid transparent;border-radius:8px;padding:9px 10px;background:none;display:block;min-height:44px}
-.list li button[aria-current=true]{background:var(--chip);border-left-color:var(--margin)}
-.list .t{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.list .m{font-size:13px;color:var(--mute);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.due{color:var(--margin);font-weight:600}
-.page{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 30px -18px rgb(20 30 60/.35);overflow:hidden}
-.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
-.bar select{min-height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--paper);font-size:15px}
-.bar .grow{flex:1}
-.ttl{width:100%;border:0;background:none;font:600 clamp(26px,3vw,34px)/1.15 Newsreader,Georgia,serif;padding:18px 22px 4px 64px;outline-offset:-4px}
-.tags{width:100%;border:0;background:none;font-size:14px;color:var(--mute);padding:4px 22px 10px 64px;outline-offset:-4px}
-.body{display:block;width:100%;min-height:58vh;border:0;resize:vertical;font-size:17px;line-height:30px;padding:2px 22px 30px 64px;outline-offset:-4px;
-background:linear-gradient(90deg,transparent 46px,var(--margin) 46px,var(--margin) 48px,transparent 48px),repeating-linear-gradient(transparent 0 29px,var(--rule) 29px 30px);background-attachment:local;background-color:var(--paper)}
-.meta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--mute)}
-.empty{padding:48px 28px 56px 64px;background:linear-gradient(90deg,transparent 46px,var(--margin) 46px,var(--margin) 48px,transparent 48px),repeating-linear-gradient(transparent 0 29px,var(--rule) 29px 30px);min-height:58vh}
-.empty h2{font-size:clamp(28px,3.4vw,40px);margin-bottom:14px}
-.empty p{max-width:56ch;color:var(--mute);margin:0 0 18px}
-.row{display:flex;flex-wrap:wrap;gap:8px}
-.help h2{font-size:24px;margin-bottom:4px}
-.help p.s{font-size:14px;color:var(--mute);margin:0 0 12px}
-.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.acts button{font-size:14px;padding:0 8px}
-.ask{display:flex;gap:6px;margin-top:10px}
-.ask input{flex:1;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-size:16px}
-.out{white-space:pre-wrap;font-size:15px;line-height:1.55;background:var(--bg);border-radius:12px;padding:12px;margin-top:12px;max-height:46vh;overflow:auto}
-.out a{color:var(--accent);overflow-wrap:anywhere}
-.shelf{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
-.shelf h3{font-size:19px;margin-bottom:8px}
-.shelf details{border-bottom:1px solid var(--line);padding:6px 0}
-.shelf summary{cursor:pointer;font-weight:600;font-size:15px;min-height:32px;display:flex;align-items:center}
-.shelf ul{margin:4px 0 8px;padding-left:18px;font-size:14px}
-.shelf li{margin:5px 0}.shelf a{color:var(--accent)}.shelf small{color:var(--mute);display:block}
-.nw{position:relative}
-.pick{position:absolute;right:0;top:calc(100% + 6px);z-index:8;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:4px;min-width:190px;box-shadow:0 14px 30px -14px rgb(20 30 60/.45)}
-.pick[hidden]{display:none}.pick span{font-size:13px;color:var(--mute);padding:2px 6px}.pick button{text-align:left;border:0}
-.pick button:hover,.pick button:focus-visible{background:var(--chip)}
-dialog{border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);max-width:min(460px,92vw);padding:20px}
-dialog::backdrop{background:rgb(10 14 24/.5)}dialog h2{font-size:26px;margin-bottom:8px}dialog p{font-size:14px;color:var(--mute);margin:0 0 12px}
-dialog label{display:block;font-size:14px;font-weight:500;margin-bottom:10px}dialog input{display:block;width:100%;min-height:44px;margin-top:4px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);font-size:16px}
-.smsg{color:var(--margin)!important;min-height:1.2em}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;display:none;gap:12px;align-items:center;z-index:9}
-.toast button{min-height:34px;background:none;color:inherit;border-color:currentColor}
-@media(max-width:1100px){.app{grid-template-columns:250px minmax(0,1fr)}.help{grid-column:1/-1}}
-@media(max-width:720px){.app{grid-template-columns:minmax(0,1fr)}.list{max-height:240px}.ttl,.tags,.body{padding-left:52px}.body{background:linear-gradient(90deg,transparent 36px,var(--margin) 36px,var(--margin) 38px,transparent 38px),repeating-linear-gradient(transparent 0 29px,var(--rule) 29px 30px);background-attachment:local}.empty{padding-left:52px}}
-@media(prefers-reduced-motion:no-preference){.page{animation:up .35s ease-out}@keyframes up{from{opacity:0;transform:translateY(6px)}}}
-</style>
-</head>
-<body>
-<header>
-  <h1>Study Notebook</h1>
-  <div class="row" style="align-items:center">
-    <span class="status" id="status">Opening your notebook…</span>
-    <button id="syncBtn">Sync</button>
-    <span class="nw"><button class="pri" id="newBtn" aria-haspopup="true" aria-expanded="false">+ New note</button>
-    <div class="pick" id="pick" hidden role="menu" aria-label="Choose a section"><span>Which section?</span>
-      <button data-new="thoughts" role="menuitem">Thoughts</button><button data-new="study" role="menuitem">Study</button><button data-new="ideas" role="menuitem">Ideas</button><button data-new="resources" role="menuitem">Resources</button></div></span>
-  </div>
-</header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Surabh Saxena | Portfolio</title>
+    <meta
+      name="description"
+      content="Surabh Saxena portfolio: data analytics, AI, operations, procurement, certificates, and campus leadership work."
+    />
+    <meta property="og:title" content="Surabh Saxena | Portfolio" />
+    <meta property="og:description" content="Data, AI, operations, and community-impact portfolio." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/surabh-csu-standing-focus.jpg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html" aria-label="Surabh Saxena home">
+        <span class="brand-mark">SS</span>
+        <span>Surabh Saxena</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation" data-nav-menu>
+        <a href="#work">Work</a>
+        <a href="#credentials">Certificates</a>
+        <a href="education.html">Education</a>
+        <a href="social.html">Social Work</a>
+        <a href="learning.html">Learning</a>
+        <a href="assets/surabh-saxena-resume.pdf">Resume</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="nav-toggle" type="button" aria-label="Open navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
 
-<main class="app">
-  <aside class="side" aria-label="Notes">
-    <div class="tabs" id="tabs"></div>
-    <input class="search" id="q" type="search" placeholder="Search notes and tags" aria-label="Search notes">
-    <ul class="list" id="list"></ul>
-  </aside>
+    <main>
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <img class="hero-image" src="assets/portfolio-hero.png" alt="" />
+        <div class="hero-scrim"></div>
+        <div class="signal-grid" aria-hidden="true"></div>
 
-  <section class="page" id="page" aria-label="Note"></section>
+        <section class="whats-new" aria-label="What's new on this site">
+          <span class="whats-new-label">What's new</span>
+          <div class="whats-new-items">
+            <a class="whats-new-item" href="learning.html">
+              <span class="whats-new-date">8 Nov</span>
+              <span class="whats-new-text">Learning page is live: AI programmes and course status in one place.</span>
+              <span class="whats-new-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a class="whats-new-item" href="https://www.linkedin.com/posts/surabh-csu_week-3-completed-at-weston-ideation-lab-at-share-7473812387595460608-u2B2/" target="_blank" rel="noopener">
+              <span class="whats-new-date">8 Nov</span>
+              <span class="whats-new-text">ProcureGo milestone post now linked from the portfolio.</span>
+              <span class="whats-new-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </section>
 
-  <aside class="help" aria-label="Study helper">
-    <h2>Study helper</h2>
-    <p class="s" id="helpHint">Builds a ready-made prompt from your open note for you to paste into Claude.</p>
-    <div class="acts">
-      <button data-act="resources">Best resources</button>
-      <button data-act="explain">Explain simply</button>
-      <button data-act="summary">Summarise</button>
-      <button data-act="quiz">Quiz me</button>
-      <button data-act="mindmap">Mind map</button>
-      <button data-act="critique">Find weak spots</button>
-    </div>
-    <form class="ask" id="askForm"><input id="askIn" placeholder="Ask anything about this note" aria-label="Ask a question"><button class="pri">Ask</button></form>
-    <div class="out" id="out" hidden></div>
+        <div class="hero-layout">
+          <div class="hero-copy-block reveal">
+            <p class="eyebrow">MIS Graduate | Data + AI + Operations</p>
+            <h1 id="hero-title">Surabh Saxena</h1>
+            <p class="hero-copy">
+              I build decision tools: procurement AI, Excel/Tableau dashboards, cost models,
+              and operations workflows that help people act with clarity.
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="#work">View Work</a>
+              <a class="button secondary" href="education.html">Education</a>
+              <a class="button secondary" href="social.html">Social Work</a>
+            </div>
+          </div>
 
-    <div class="shelf">
-      <h3>Resource shelf</h3>
-      <details open><summary>How to study (research-backed)</summary><ul>
-        <li><a href="https://journals.sagepub.com/doi/10.1177/1529100612453266">Dunlosky et al. (2013), Improving Students' Learning</a><small>Rates 10 techniques; practice testing and spaced practice score highest.</small></li>
-        <li><a href="https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x">Roediger &amp; Karpicke (2006), Test-Enhanced Learning</a><small>Why “Quiz me” beats re-reading.</small></li>
-        <li><a href="https://doi.org/10.1037/0033-2909.132.3.354">Cepeda et al. (2006), Distributed practice meta-analysis</a><small>The basis for the review schedule in this notebook.</small></li>
-        <li><a href="https://apps.ankiweb.net/">Anki</a><small>Free flashcards with spaced repetition.</small></li>
-      </ul></details>
-      <details><summary>Data analysis skills</summary><ul>
-        <li><a href="https://sqlbolt.com/">SQLBolt</a><small>Interactive SQL lessons, free.</small></li>
-        <li><a href="https://www.kaggle.com/learn">Kaggle Learn</a><small>Short Python, pandas, SQL and visualisation courses.</small></li>
-        <li><a href="https://wesmckinney.com/book/">Python for Data Analysis, 3rd ed.</a><small>Free online edition by the creator of pandas.</small></li>
-        <li><a href="https://learn.microsoft.com/en-us/training/powerplatform/power-bi">Microsoft Learn: Power BI</a><small>Official free training paths.</small></li>
-        <li><a href="https://www.coursera.org/professional-certificates/google-data-analytics">Google Data Analytics Certificate</a><small>Structured beginner path (paid, financial aid available).</small></li>
-      </ul></details>
-      <details><summary>Finance foundations and data</summary><ul>
-        <li><a href="https://www.khanacademy.org/economics-finance-domain/core-finance">Khan Academy: Finance and capital markets</a><small>Free fundamentals.</small></li>
-        <li><a href="https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/">MIT OCW 15.401 Finance Theory I</a><small>Full university course, free.</small></li>
-        <li><a href="https://pages.stern.nyu.edu/~adamodar/">Aswath Damodaran, NYU Stern</a><small>Valuation lectures and free industry datasets.</small></li>
-        <li><a href="https://www.sec.gov/edgar/search/">SEC EDGAR full-text search</a><small>Real 10-K and 10-Q filings to practise on.</small></li>
-        <li><a href="https://fred.stlouisfed.org/">FRED, St. Louis Fed</a><small>Free economic time series for projects.</small></li>
-      </ul></details>
-    </div>
-  </aside>
-</main>
+          <div class="motion-dashboard reveal" aria-label="Animated analytics graphic">
+            <div class="dash-top">
+              <span>Live Operations View</span>
+              <span>CSU / AI / Finance</span>
+            </div>
+            <div class="dash-kpis">
+              <div><strong>35+</strong><span>Estimates</span></div>
+              <div><strong>15%</strong><span>Accuracy lift</span></div>
+              <div><strong>146</strong><span>Orgs supported</span></div>
+            </div>
+            <div class="dash-body">
+              <div class="animated-bars" aria-hidden="true">
+                <span style="--h: 42%"></span>
+                <span style="--h: 76%"></span>
+                <span style="--h: 58%"></span>
+                <span style="--h: 88%"></span>
+                <span style="--h: 66%"></span>
+              </div>
+              <svg class="path-graph" viewBox="0 0 260 130" aria-hidden="true">
+                <polyline points="10,106 58,86 100,92 142,52 184,68 242,24"></polyline>
+                <circle cx="242" cy="24" r="6"></circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<dialog id="sync"><form id="sform">
-  <h2>Sync with GitHub</h2>
-  <p>Your notes are saved in a <b>private</b> repo of yours as <code>notes.json</code>. Each phone or laptop needs this once. The token stays in this browser only.</p>
-  <label>GitHub username<input id="so" autocomplete="off" required></label>
-  <label>Private repo name<input id="sr" autocomplete="off" required></label>
-  <label>Fine-grained token<input id="st" type="password" autocomplete="off" required></label>
-  <p class="smsg" id="smsg" role="status"></p>
-  <div class="row"><button class="pri">Connect</button><button type="button" id="sclose">Cancel</button><button type="button" id="soff">Disconnect this device</button></div>
-</form></dialog>
-<div class="toast" id="toast" role="status"><span id="toastMsg"></span><button id="undoBtn">Undo</button></div>
+      <section class="section compact-intro" aria-label="Profile snapshot">
+        <div class="intro-photo reveal">
+          <img src="assets/surabh-csu-standing-focus.jpg" alt="Surabh Saxena at Cleveland State University" />
+        </div>
+        <div class="intro-copy reveal">
+          <p class="eyebrow">Profile</p>
+          <h2>Analyst mindset, builder energy, campus-tested leadership.</h2>
+          <p>
+            I combine information systems, AI product work, analytics, and an engineering operations
+            background. My experience spans procurement AI, Excel/Tableau dashboards, cleanroom and
+            HVAC technical documentation, vendor coordination, campus leadership, and student-service
+            operations.
+          </p>
+          <div class="profile-pills" aria-label="Profile focus areas">
+            <span>AI Product Development</span>
+            <span>Excel + Tableau</span>
+            <span>Engineering Operations</span>
+            <span>Vendor Coordination</span>
+          </div>
+        </div>
+      </section>
 
-<script>
-{
-const NBS=[["all","All"],["thoughts","Thoughts"],["study","Study"],["ideas","Ideas"],["resources","Resources"],["due","Due for review"]];
-const GAPS=[1,3,7,16,35];
-const DAY=864e5;
-const S={notes:{},active:null,nb:"all",q:"",timer:null,saving:{},lastDeleted:null,col:null,mode:"loading"};
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmt=t=>t?new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short"}):"";
-const isDue=n=>n.nextReview&&n.nextReview<=Date.now();
-const status=t=>{$("status").textContent=t};
+      <section class="section" id="work" aria-labelledby="work-title">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Selected Work</p>
+          <h2 id="work-title">Proof points behind the profile.</h2>
+        </div>
 
-/* ---------- storage: this device + a private GitHub repo ---------- */
-const LS="studyNotebook.v1",CFG="studyNotebook.gh";
-let cfg=null;try{cfg=JSON.parse(localStorage.getItem(CFG)||"null")}catch(e){}
-function lsLoad(){try{return JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){return {}}}
-function lsSave(){try{localStorage.setItem(LS,JSON.stringify(S.notes))}catch(e){status("This browser blocked saving")}}
-const b64e=str=>{const by=new TextEncoder().encode(str);let bin="";for(let i=0;i<by.length;i+=8192)bin+=String.fromCharCode(...by.subarray(i,i+8192));return btoa(bin)};
-const b64d=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g,"")),c=>c.charCodeAt(0)));
-const api=()=>`https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/notes.json`;
-const hdr=()=>({Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"});
-let sha=null,pushT=null,busy=false,again=false;
-function merge(remote){
-  for(const id in remote){const r=remote[id],l=S.notes[id];if(!l||(r.updated||0)>(l.updated||0))S.notes[id]={...r,id}}
-}
-async function pull(){
-  const r=await fetch(api(),{headers:hdr(),cache:"no-store"});
-  if(r.status===404){sha=null;return}
-  if(!r.ok)throw r.status;
-  const j=await r.json();sha=j.sha;merge(JSON.parse(b64d(j.content)||"{}"));lsSave();
-}
-async function push(){
-  if(!cfg)return;
-  if(busy){again=true;return}busy=true;status("Syncing…");
-  try{
-    for(let tries=0;tries<2;tries++){
-      const body={message:"Update notes",content:b64e(JSON.stringify(S.notes)),...(sha?{sha}:{})};
-      const r=await fetch(api(),{method:"PUT",headers:{...hdr(),"Content-Type":"application/json"},body:JSON.stringify(body)});
-      if(r.ok){sha=(await r.json()).content.sha;status("Synced to GitHub · "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));break}
-      if((r.status===409||r.status===422)&&tries===0){await pull();continue}
-      throw r.status;
-    }
-  }catch(e){status(e===401?"GitHub token rejected: open Sync":"Saved on this device; GitHub sync failed")}
-  busy=false;if(again){again=false;push()}
-}
-async function persist(n){lsSave();if(!cfg){status("Saved on this device only");return}status("Saving…");clearTimeout(pushT);pushT=setTimeout(push,1500)}
-async function wipe(id){S.notes[id]={id,deleted:true,updated:Date.now()};persist(S.notes[id])}
-async function boot(){
-  S.notes=lsLoad();for(const k in S.notes)S.notes[k].id=k;pickFirst();render();
-  if(!cfg){status("Saved on this device only · set up Sync");return}
-  status("Syncing…");
-  try{await pull();pickFirst();S.reloadEditor=true;render();status("Synced to GitHub")}
-  catch(e){status(e===401?"GitHub token rejected: open Sync":"Offline? Showing notes saved on this device")}
-}
-boot();
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&cfg&&!busy){pull().then(()=>{S.reloadEditor=document.activeElement?.closest?.("#page")==null;render()}).catch(()=>{})}else if(document.visibilityState==="hidden"&&cfg){clearTimeout(pushT);push()}});
+        <!-- work:start -->
+        <div class="work-grid">
+          <article class="work-card reveal">
+            <div class="card-graphic ai-graphic" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <p class="project-kicker">AI + Procurement</p>
+            <h3>ProcureGo</h3>
+            <p>AI procurement copilot for RFQs, supplier comparison, bid support, and auditable review.</p>
+            <div class="card-actions">
+              <a href="#work" data-locked-link="0"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>LinkedIn post</a>
+            </div>
+          </article>
 
-/* ---------- view ---------- */
-function visible(){
-  const q=S.q.toLowerCase();
-  return Object.values(S.notes).filter(n=>{
-    if(n.deleted)return false;
-    if(S.nb==="due"){if(!isDue(n))return false}else if(S.nb!=="all"&&n.nb!==S.nb)return false;
-    if(!q)return true;
-    return (n.title+" "+n.body+" "+(n.tags||[]).join(" ")).toLowerCase().includes(q);
-  }).sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||(b.updated||0)-(a.updated||0));
-}
-function pickFirst(){if(!S.active||!S.notes[S.active]){const v=visible();S.active=v[0]?.id||null}S.reloadEditor=true}
-function render(){
-  const due=Object.values(S.notes).filter(n=>!n.deleted&&isDue(n)).length;
-  $("tabs").innerHTML=NBS.map(([k,l])=>`<button data-nb="${k}" aria-pressed="${S.nb===k}">${l}${k==="due"&&due?` · ${due}`:""}</button>`).join("");
-  const v=visible();
-  $("list").innerHTML=v.length?v.map(n=>`<li><button data-id="${esc(n.id)}" aria-current="${n.id===S.active}">
-    <span class="t">${n.pinned?"Pinned · ":""}${esc(n.title||"Untitled")}</span>
-    <span class="m">${isDue(n)?'<span class="due">Review due · </span>':""}${esc(NBS.find(x=>x[0]===n.nb)?.[1]||"")} · ${fmt(n.updated)} ${esc((n.body||"").slice(0,60))}</span></button></li>`).join("")
-    :`<li class="m" style="padding:10px;color:var(--mute);font-size:14px">${S.q?"No notes match.":"Nothing here yet."}</li>`;
-  if(S.reloadEditor){S.reloadEditor=false;drawPage()}
-  else drawMeta();
-}
-function drawPage(){
-  const n=S.notes[S.active];
-  if(!n){$("page").innerHTML=`<div class="empty"><h2>A clean page.</h2>
-    <p>Write what you think, what you're learning, or links worth keeping. Every note saves as you type on this device, and to your private GitHub repo once you set up Sync, so it shows up on your phone and laptop. Open a study note and use the helper to build a ready-made prompt for Claude: best resources, a quiz, or the gaps in your understanding.</p>
-    <div class="row"><button class="pri" data-new="study">New study note</button><button data-new="thoughts">New thought</button><button data-new="ideas">New idea</button><button data-new="resources">Save a resource</button></div></div>`;
-    $("helpHint").textContent="Open or create a note to use the helper.";return}
-  $("helpHint").textContent="Works on “"+(n.title||"Untitled")+"”.";
-  $("page").innerHTML=`<div class="bar">
-    <select id="nbSel" aria-label="Section">${NBS.filter(x=>!["all","due"].includes(x[0])).map(([k,l])=>`<option value="${k}"${n.nb===k?" selected":""}>${l}</option>`).join("")}</select>
-    <span class="grow"></span>
-    <button id="pinBtn" aria-pressed="${!!n.pinned}">${n.pinned?"Unpin":"Pin"}</button>
-    <button id="mdBtn">Copy as Markdown</button>
-    <button id="delBtn">Delete</button></div>
-    <input class="ttl" id="ttl" placeholder="Title" aria-label="Title">
-    <input class="tags" id="tg" placeholder="Tags, comma separated (e.g. SQL, ratios, week 2)" aria-label="Tags">
-    <textarea class="body" id="bd" placeholder="Start writing…" aria-label="Note"></textarea>
-    <div class="meta" id="meta"></div>`;
-  $("ttl").value=n.title||"";$("tg").value=(n.tags||[]).join(", ");$("bd").value=n.body||"";
-  drawMeta();
-}
-function drawMeta(){
-  const n=S.notes[S.active],m=$("meta");if(!n||!m)return;
-  const lvl=n.level||0,words=(n.body||"").trim().split(/\s+/).filter(Boolean).length;
-  const next=n.nextReview?(isDue(n)?"Review due now":"Next review "+fmt(n.nextReview)):"Not in review yet";
-  m.innerHTML=`<span>${words} words · edited ${fmt(n.updated)} · ${next}</span>
-    <span class="row"><button id="revBtn">${n.nextReview?"I reviewed this":"Start reviewing"}</button>${n.nextReview?'<button id="revOff">Stop</button>':""}</span>`;
-  m.title=n.nextReview?`Review step ${lvl+1} of ${GAPS.length}: gaps of ${GAPS.join(", ")} days`:"";
-}
+          <article class="work-card reveal">
+            <div class="card-graphic sheet-graphic" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <p class="project-kicker">Excel + Tableau</p>
+            <h3>Analytics + Public Dashboards</h3>
+            <p>
+              Tableau and Excel work across sales, health, sports-budget, and cricket analysis themes,
+              built to explain the decision behind the number.
+            </p>
+            <div class="card-actions">
+              <a href="#work" data-locked-link="1"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>Tableau Public</a>
+            </div>
+          </article>
 
-/* ---------- actions ---------- */
-function newNote(nb){
-  const id="n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  const now=Date.now();
-  S.notes[id]={id,nb:nb||(["all","due"].includes(S.nb)?"study":S.nb),title:"",body:"",tags:[],pinned:false,created:now,updated:now};
-  S.active=id;S.q="";$("q").value="";if(S.nb!=="all"&&S.nb!==S.notes[id].nb)S.nb="all";
-  S.reloadEditor=true;render();persist(S.notes[id]);$("ttl")?.focus();
-}
-function edit(patch){
-  const n=S.notes[S.active];if(!n)return;
-  Object.assign(n,patch,{updated:Date.now()});status("Saving…");
-  clearTimeout(S.timer);S.timer=setTimeout(()=>{persist(n);render()},700);
-}
-function toast(msg,undo){
-  $("toastMsg").textContent=msg;$("undoBtn").style.display=undo?"":"none";$("toast").style.display="flex";
-  clearTimeout(S.tt);S.tt=setTimeout(()=>$("toast").style.display="none",6000);
-}
-async function copy(text,msg){try{await navigator.clipboard.writeText(text);toast(msg||"Copied")}catch(e){toast("Copy was blocked by the browser")}}
+          <article class="work-card reveal">
+            <div class="card-graphic ops-graphic" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <p class="project-kicker">Engineering + Operations</p>
+            <h3>Cleanroom & HVAC Systems</h3>
+            <p>
+              Heat-load calculations, BOQs, technical and compliance data sheets, vendor coordination,
+              and client communication for turnkey cleanroom projects.
+            </p>
+          </article>
 
-function showPick(on){$("pick").hidden=!on;$("newBtn").setAttribute("aria-expanded",on);if(on)$("pick").querySelector("button").focus()}
-document.addEventListener("click",e=>{
-  if(!e.target.closest(".nw"))showPick(false);
-  const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.nb){S.nb=b.dataset.nb;render();return}
-  if(b.dataset.id){flush();S.active=b.dataset.id;S.reloadEditor=true;render();return}
-  if(b.dataset.new){showPick(false);newNote(b.dataset.new);return}
-  if(b.dataset.act){runHelper(b.dataset.act);return}
-  const n=S.notes[S.active];
-  switch(b.id){
-    case "newBtn":showPick($("pick").hidden);break;
-    case "pinBtn":n.pinned=!n.pinned;n.updated=Date.now();persist(n);S.reloadEditor=true;render();break;
-    case "mdBtn":copy(`# ${n.title||"Untitled"}\n\n${(n.tags||[]).length?"Tags: "+n.tags.join(", ")+"\n\n":""}${n.body||""}`,"Copied as Markdown");break;
-    case "delBtn":S.lastDeleted={...n};wipe(n.id);S.active=null;pickFirst();render();toast("Note deleted",true);break;
-    case "undoBtn":if(S.lastDeleted){const d={...S.lastDeleted,updated:Date.now()};S.notes[d.id]=d;S.active=d.id;S.lastDeleted=null;persist(d);S.reloadEditor=true;render();$("toast").style.display="none"}break;
-    case "revBtn":{const lvl=n.nextReview?Math.min((n.level||0)+1,GAPS.length-1):0;n.level=lvl;n.nextReview=Date.now()+GAPS[lvl]*DAY;n.updated=Date.now();persist(n);render();drawMeta();toast("Next review in "+GAPS[lvl]+" days");break}
-    case "revOff":delete n.nextReview;delete n.level;n.updated=Date.now();persist(n);render();drawMeta();break;
-  }
-});
-function flush(){if(S.timer){clearTimeout(S.timer);S.timer=null;const n=S.notes[S.active];if(n)persist(n)}}
-document.addEventListener("input",e=>{
-  const id=e.target.id;
-  if(id==="q"){S.q=e.target.value;render();return}
-  if(id==="ttl")edit({title:e.target.value});
-  else if(id==="bd")edit({body:e.target.value});
-  else if(id==="tg")edit({tags:e.target.value.split(",").map(s=>s.trim()).filter(Boolean)});
-});
-document.addEventListener("change",e=>{if(e.target.id==="nbSel"){edit({nb:e.target.value});flush();render()}});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("pick").hidden){showPick(false);$("newBtn").focus()}
-if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();flush()}});
-window.addEventListener("pagehide",flush);
-$("askForm").addEventListener("submit",e=>{e.preventDefault();const q=$("askIn").value.trim();if(q)runHelper("ask",q)});
+          <article class="work-card reveal">
+            <div class="card-graphic weather-graphic" aria-hidden="true">
+              <span class="weather-sun"></span>
+              <span class="weather-cloud"></span>
+              <span class="weather-rain one"></span>
+              <span class="weather-rain two"></span>
+              <span class="weather-line"></span>
+            </div>
+            <p class="project-kicker">JavaScript + Weather API</p>
+            <h3>Live Weather Studio</h3>
+            <p>
+              Animated weather dashboard with city search, Open-Meteo live data, comfort notes,
+              forecast cards, unit switching, and responsive graphics.
+            </p>
+            <div class="card-actions">
+              <a href="#work" data-locked-link="2"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>Live App</a>
+              <a href="#work" data-locked-link="3"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>GitHub Repo</a>
+            </div>
+          </article>
 
-/* ---------- study helper (asks Claude) ---------- */
-const TASKS={
-  resources:"Recommend the 5–7 best free or widely respected resources for learning what this note covers. Prefer official documentation, university courses, peer-reviewed or primary sources. For each: name, full https:// link, one line on why it fits and the level (beginner/intermediate). Only give links you are confident exist; if unsure, name the resource without a link. End with one line: 'Verify each link before relying on it.'",
-  explain:"Explain the core idea of this note to a beginner in plain language, with one concrete real-world example (a finance or business example if it fits) and a short analogy. Under 200 words.",
-  summary:"Summarise this note into 5–8 crisp bullet points a student could revise from. Use '- ' bullets.",
-  quiz:"Write 5 short retrieval-practice questions on this note, mixing recall and application. List the questions first, then a line 'Answers', then numbered answers.",
-  mindmap:"Turn this note into a text mind map: the central topic, then 3–6 branches, each with 2–4 sub-points, using indented '- ' lines.",
-  critique:"Act as a demanding tutor. Point out gaps, misconceptions, or vague statements in this note, say what is correct and well thought out, and suggest the 3 most valuable things to learn next. Be direct and specific."
-};
-async function runHelper(kind,question){
-  const n=S.notes[S.active];
-  if(!n||!(n.title||n.body)){toast("Write something in a note first");return}
-  const task=kind==="ask"?"Answer the student's question using the note as context. Be accurate; say if something is uncertain. Question: "+question:TASKS[kind];
-  const prompt=`You are a sharp, honest study tutor helping a learner who is building skills as a financial data analyst.\n\nTASK: ${task}\n\nNOTE TITLE: ${n.title||"Untitled"}\nTAGS: ${(n.tags||[]).join(", ")||"none"}\nNOTE:\n${(n.body||"").slice(0,8000)}`;
-  const out=$("out");out.hidden=false;out.textContent="";
-  let ok=true;try{await navigator.clipboard.writeText(prompt)}catch(e){ok=false}
-  const p=document.createElement("p");p.style.margin="0 0 8px";
-  p.textContent=ok?"Prompt copied. Open Claude, paste it, then paste the useful part of the answer back into your note.":"Copy the prompt below, then paste it into Claude.";
-  const a=document.createElement("a");a.href="https://claude.ai/new";a.target="_blank";a.rel="noopener";a.textContent="Open Claude →";
-  out.append(p,a);
-  if(!ok){const ta=document.createElement("textarea");ta.value=prompt;ta.readOnly=true;ta.style.cssText="width:100%;min-height:160px;margin-top:8px;font-size:14px";out.append(ta)}
-}
-/* ---------- sync settings ---------- */
-function openSync(){
-  $("so").value=cfg?.owner||"surabh-data";$("sr").value=cfg?.repo||"notebook-data";$("st").value=cfg?.token||"";$("smsg").textContent="";
-  $("sync").showModal();
-}
-$("syncBtn").addEventListener("click",openSync);
-$("sclose").addEventListener("click",()=>$("sync").close());
-$("soff").addEventListener("click",()=>{cfg=null;sha=null;try{localStorage.removeItem(CFG)}catch(e){}$("sync").close();status("Saved on this device only · set up Sync")});
-$("sform").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const c={owner:$("so").value.trim(),repo:$("sr").value.trim(),token:$("st").value.trim()};
-  if(!c.owner||!c.repo||!c.token){$("smsg").textContent="Fill in all three fields.";return}
-  $("smsg").textContent="Checking…";
-  try{
-    const r=await fetch(`https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}`,{headers:{Authorization:"Bearer "+c.token,Accept:"application/vnd.github+json"}});
-    if(!r.ok){$("smsg").textContent=r.status===401?"Token rejected. Check you copied it fully.":"Can't reach that repo with this token. Check the names and that the token includes this repo.";return}
-    const j=await r.json();
-    if(!j.private){$("smsg").textContent="That repo is public, so anyone could read your notes. Make it private first.";return}
-    cfg=c;try{localStorage.setItem(CFG,JSON.stringify(c))}catch(e){}
-    $("smsg").textContent="Connected. Syncing…";
-    await pull();await push();pickFirst();S.reloadEditor=true;render();$("sync").close();
-  }catch(err){$("smsg").textContent="Network error. Try again."}
-});
-render();
-}
-</script>
-</body>
+          <article class="work-card reveal">
+            <div class="card-graphic trust-graphic" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <p class="project-kicker">JavaScript + Online Safety</p>
+            <h3>Parakh</h3>
+            <p>
+              Scam-check tool for social media contacts. Scores identity signals, reported history,
+              and conversation behaviour, reads screenshots on the device, and builds a risk report
+              for platforms and cyber cells.
+            </p>
+            <div class="card-actions">
+              <a href="#work" data-locked-link="4"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>Live App</a>
+            </div>
+          </article>
+          <article class="work-card reveal">
+            <div class="card-graphic chair-graphic" aria-hidden="true">
+              <span></span><span class="booked"></span><span class="booked"></span><span></span><span class="booked"></span><span></span>
+              <span class="booked"></span><span></span><span class="you"></span><span class="booked"></span><span></span><span class="booked"></span>
+              <span></span><span class="booked"></span><span></span><span></span><span class="booked"></span><span class="booked"></span>
+            </div>
+            <p class="project-kicker">Product + Marketplace</p>
+            <h3>Barbos</h3>
+            <p>
+              Barber shop booking app for India. Customers pick a chair and time like a cinema seat, see a live
+              walk-in queue and their token, and pay by UPI or at the shop. Owners set their own prices and
+              download a transaction sheet for their CA.
+            </p>
+            <div class="card-actions">
+              <a href="#work" data-locked-link="5"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>Live Demo</a>
+              <a href="#work" data-locked-link="6"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>Private Repo</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="work-links reveal">
+          <a class="button primary" href="#work" data-locked-link="7"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>GitHub Profile</a>
+          <a class="button secondary" href="#work" data-locked-link="8"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>Live Weather Studio</a>
+          <a class="button secondary" href="#work" data-locked-link="9"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>Tableau Public</a>
+          <a class="button secondary" href="#work" data-locked-link="10"><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5Zm1.5 0h4V5a2 2 0 0 0-4 0v2Z"/></svg>HackerRank</a>
+        </div>
+        <!-- work:end -->
+
+        <dialog class="work-lock" data-work-dialog aria-labelledby="work-lock-title">
+          <form class="work-lock-form" data-work-form>
+            <h3 id="work-lock-title">Enter access code</h3>
+            <p>Project links open with the code you received from Surabh. No code yet?
+              <a href="mailto:surabhdata@gmail.com?subject=Portfolio%20access%20code">Request one</a>.</p>
+            <label class="visually-hidden" for="work-code">Access code</label>
+            <input id="work-code" type="password" autocomplete="off" placeholder="Access code" required data-work-code />
+            <p class="work-lock-status" role="status" aria-live="polite" data-work-status></p>
+            <div class="work-lock-actions">
+              <button class="button" type="button" data-work-cancel>Cancel</button>
+              <button class="button primary" type="submit" data-work-submit>Unlock</button>
+            </div>
+          </form>
+        </dialog>
+        <script type="application/json" id="work-locked">{"v":2,"iter":600000,"salt":"YhTmHTXq7ZMhNxuwFHg39g==","iv":"w2ItmpPBS1gIxSh+","data":"0iyxpYxvtcfnVTco3e9cUPOKUFa+MIuM/Enib24X5Mp668vB8q4lq7hCPZJzxYN1B0WsKJJsbbGYN6L/yljTK+f8Nc5eqYORkQ+e17f+g6SGv6zsITmtNRq+oyuZtZzIjQYbFK9/FUa7ATgg+NO27glwz1xS0Dbrza72Hcho1oq+AywgqqVH+n3c5lCsjoIPb+y+JWrerPgjTb2gb4KHs1fodk7MW7D9OrQL7E757kkikDLaI6m/kGh9L3Q/ZeFtOZYWf61iUiDW2U+of+rrY3WzWPiSeHHmkKvr2pkmzzHX+wBILZRfx56/N40AJ7nNOEe7dSIux51JuRB6JpiP4/Amtw5DzHdadYbLdVKjOnDVGxR8CDtqs9NJi9Y3z/YtIECUTL0jNSiEOrnfFuvDhau//FJZG8VgBGEXkCRzZH/SZugUgLbESk+X7JEIPLawvqrNUBqmOlm2GAYnZFUhRq3aU02wFpehtIZtED4J2TWQgLPf+fa9oD9OdLigcHWW5suvqk9GUwz7EYUHPWYZkczku4P6zJ/Ht3fzlCjxWAD9eq3gGBF4xSQdxOB//J3tQe8PStmPb0g/YxkRgRQeXJkhVTlXV21EkzOiPbeaZGlQomIoti4QlJRBdfHJSB1Wr73/lamRoYk4uMFyD7qco3yVwWVNSWZfypXZJ5GCIqUqXiTzlPASplewpSUELHtcRw1M6Y23Oc7Ck/a5rUgYpa/wX4X4N1jLGdKAl3mdWr0Gqrok6etQE1jOe9huJ+1JdoC/htag2zMp6I25VzopXEQHK00vdw=="}</script>
+      </section>
+
+      <section class="section credentials-section" id="credentials" aria-labelledby="credentials-title">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Certificates</p>
+          <h2 id="credentials-title">Verified learning signals behind the work.</h2>
+        </div>
+
+        <div class="credential-grid">
+          <a
+            class="credential-card reveal"
+            href="https://forage-uploads-prod.s3.amazonaws.com/completion-certificates/Deloitte%20Australia/YPWCiGNTkr6QxcpEu_Deloitte%20Australia_fp3pTwLXNjjcM2E9s_1693553827261_completion_certificate.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>Deloitte Australia</span>
+            <h3>Data Analytics Virtual Internship</h3>
+            <p>Data analysis, Tableau, cyber forensics, and client-facing proposal work.</p>
+          </a>
+
+          <a
+            class="credential-card reveal"
+            href="https://www.linkedin.com/learning/certificates/c777c913a164e7798a200e5144c7311b05cfa31d972051b35c9dc78ab5c420e7"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>LinkedIn Learning</span>
+            <h3>Statistics Foundations 1</h3>
+            <p>Core statistics for understanding datasets, distributions, and evidence.</p>
+          </a>
+
+          <a
+            class="credential-card reveal"
+            href="https://www.linkedin.com/learning/certificates/12064e27c8d6187d5d0d89de986b62b68338cd6f39841fe8f5b80a55b700aab2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>LinkedIn Learning</span>
+            <h3>Statistics Foundations 2</h3>
+            <p>Probability, uncertainty, and analytical thinking for data-backed decisions.</p>
+          </a>
+
+          <a
+            class="credential-card reveal"
+            href="https://www.linkedin.com/learning/certificates/79d9ed6378ac09d7e0e01f30d35ad210513e96c8c470e8d085bd3e4e4200b4c0"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>LinkedIn Learning</span>
+            <h3>Generative AI</h3>
+            <p>Large language models, prompt patterns, search logic, and applied AI workflows.</p>
+          </a>
+        </div>
+      
+        <div class="learning-journey reveal">
+          <p class="eyebrow">Learning journey</p>
+          <div class="learning-journey-grid">
+            <div class="credential-card">
+              <h3>AI Skills House, Phase 1</h3>
+              <p>Registered; course access pending.</p>
+            </div>
+            <div class="credential-card">
+              <h3>Managing AI Projects: From Strategy to Delivery - Johns Hopkins University (Coursera)</h3>
+              <p>Planned.</p>
+            </div>
+          </div>
+          <div class="card-actions">
+            <a href="learning.html">Open learning page</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section social-teaser" aria-labelledby="social-title">
+        <div class="social-visual reveal" aria-hidden="true">
+          <img src="assets/surabh-campus-service.jpg" alt="" />
+        </div>
+        <div class="social-copy reveal">
+          <p class="eyebrow">Social Work</p>
+          <h2 id="social-title">Leadership is also service.</h2>
+          <p>
+            I added a separate page for the campus and volunteer work: SGA Treasurer,
+            Parking and Review Board, Green Blazer work, and Care Champion recognition.
+          </p>
+          <a class="button primary" href="social.html">Open Social Work Page</a>
+        </div>
+      </section>
+
+      <section class="section contact-section" id="contact" aria-labelledby="contact-title">
+        <div class="reveal">
+          <p class="eyebrow">Contact</p>
+          <h2 id="contact-title">Let us build something useful from messy information.</h2>
+        </div>
+        <div class="contact-actions reveal">
+          <a class="button primary" href="mailto:surabhdata@gmail.com">Email Me</a>
+          <a class="button secondary" href="https://www.linkedin.com/in/surabh-csu/">LinkedIn</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; <span data-year></span> Surabh Saxena. Built for GitHub Pages.</p>
+      <a href="#top">Back to top</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
 </html>
+
+
